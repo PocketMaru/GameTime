@@ -1,0 +1,17 @@
+import Foundation
+
+struct GameTimer: Identifiable, Hashable {
+    let id: UUID
+    var name: String
+    var timer: Double
+}
+
+extension GameTimer {
+    func toDraft() -> GameTimer.Draft {
+        GameTimer.Draft(
+            id: id,
+            name: name,
+            timer: timer
+        )
+    }
+}
