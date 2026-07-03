@@ -14,8 +14,9 @@ enum GameTimerSheet: Hashable, Identifiable {
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
-    var gameTimer: String = ""
+    var timeRemaining: String = ""
     var taskRunning: Task<Void, Never>?
+    var isRunning: Bool = false
     
     func goToCreate() {
         sheet = .create
@@ -29,19 +30,23 @@ final class GameTimerVM {
         sheet = .detail(counter)
     }
     func timerSelected(_ counter: GameTimer) {
-        gameTimer = String(counter.timer)
+        timeRemaining = String(counter.timer)
     }
     
     func startTimer() {
+        isRunning = true
         taskRunning = Task {
+            defer {
+                isRunning = false
+            }
             do {
-                while Double(gameTimer) ?? 0 > 0 && !Task.isCancelled {
+                while Double(timeRemaining) ?? 0 > 0 && !Task.isCancelled {
                     try await Task.sleep(for: .seconds(1))
-                    if let timer = Double(gameTimer) {
-                        gameTimer = String(timer - 1)
+                    if let timer = Double(timeRemaining) {
+                        timeRemaining = String(timer - 1)
                     }
-                    if String(gameTimer) == String(0) {
-                        stopTimer()
+                    if String(timeRemaining) == String(0) {
+                        pauseTimer()
                     }
                 }
             } catch {
@@ -50,12 +55,12 @@ final class GameTimerVM {
         }
     }
     
-    func stopTimer() {
+    func pauseTimer() {
         taskRunning?.cancel()
     }
     
     func resetTimer() {
-        gameTimer = ""
+        timeRemaining = ""
     }
     
     func confirmCreate(gameTimer: GameTimer) {
@@ -76,7 +81,7 @@ final class GameTimerVM {
             throw GameTimerError.gameTimerNotFound
         }
         gameTimers.remove(at: index)
-        gameTimer = ""
+        timeRemaining = ""
     }
     
     func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
