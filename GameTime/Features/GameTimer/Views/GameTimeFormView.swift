@@ -12,6 +12,9 @@ struct GameTimeFormView: View {
                 selectedMinutes: $form.timeComponents.minutes,
                 selectedHours: $form.timeComponents.hours,
             )
+            .onChange(of: form.timeComponents.hours) { _, newValue in
+                print("Hours:", newValue)
+            }
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {

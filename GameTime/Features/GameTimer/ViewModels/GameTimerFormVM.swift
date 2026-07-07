@@ -34,6 +34,7 @@ final class GameTimerFormVM {
         mode: FormMode,
         onSubmit: ((GameTimer.Draft) -> Void)?
     ) {
+        print("FORM INIT")
         self.draft = draft
         self.mode = mode
         self.onSubmit = onSubmit
