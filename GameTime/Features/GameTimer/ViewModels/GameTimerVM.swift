@@ -5,10 +5,17 @@ import Observation
 // Hashable is a requirement for identifiable.
 enum GameTimerSheet: Hashable, Identifiable {
     case create
-    case edit(GameTimer)
+    case edit
     case detail(GameTimer)
     case timer
-    var id: Self { self }
+    var id: String {
+        switch self {
+        case .create: return "create"
+        case .edit: return "edit"
+        case .detail: return "detail"
+        case .timer: return "timer"
+        }
+    }
 }
 
 /// `GameTimerVM` is a  feature responsible for:
@@ -24,6 +31,7 @@ final class GameTimerVM {
     var gameTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
     var selectedTimer: GameTimer?
+    var activeForm: GameTimerFormVM?
     var timer = TimerVM()
     var timeComponents = TimeComponents()
     
@@ -62,11 +70,14 @@ final class GameTimerVM {
     }
     
     func goToCreate() {
+        let draft = GameTimer.Draft(id: UUID())
+        activeForm = makeForm(gameTimer: draft, mode: .create)
         sheet = .create
     }
     
     func goToEdit(_ counter: GameTimer) {
-        sheet = .edit(counter)
+        activeForm = makeForm(gameTimer: counter.toDraft(), mode: .edit)
+        sheet = .edit
     }
     
     func goToDetail(_ counter: GameTimer) {

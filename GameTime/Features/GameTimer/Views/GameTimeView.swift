@@ -47,21 +47,16 @@ struct GameTimeView: View {
             .sheet(item: $vm.sheet) { item in
                 switch item {
                 case .create:
-                    let create = GameTimer.Draft(id: UUID())
-                    let form = vm.makeForm(
-                        gameTimer: create,
-                        mode: .create
-                    )
                     NavigationStack {
-                        GameTimeFormView(form: form)
+                        if let form = vm.activeForm {
+                            GameTimeFormView(form: form)
+                        }
                     }
-                case .edit(let timer):
-                    let form = vm.makeForm(
-                        gameTimer: timer.toDraft(),
-                        mode: .edit
-                    )
+                case .edit:
                     NavigationStack {
-                        GameTimeFormView(form:form)
+                        if let form = vm.activeForm {
+                            GameTimeFormView(form: form)
+                        }
                     }
                 case .detail(let timer):
                     NavigationStack {
