@@ -5,32 +5,15 @@ struct GameTimeView: View {
     var body: some View {
         NavigationStack {
             VStack(spacing: 20) {
-                Text("Current Game Timer")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.top, 20)
-                Text("\(vm.timeRemaining)")
-                    .font(.largeTitle)
-                    .padding(10)
-                Text("Set Timer")
-                    .font(.title)
-                    .fontWeight(.bold)
-                    .padding(.top, 20)
-                TextField("Set Timer", text: $vm.timeRemaining)
-                    .font(.largeTitle)
-                    .multilineTextAlignment(.center)
-                    .padding(10)
-                if !vm.isRunning {
-                    Button("Start Timer") {
-                        vm.startTimer()
-                    }
-                } else {
-                    Button("Pause") {
-                        vm.pauseTimer()
-                    }
-                }
-                Button("Reset") {
-                    vm.resetTimer()
+                TimerPickerView(
+                    selectedSeconds: $vm.timeComponents.seconds,
+                    selectedMinutes: $vm.timeComponents.minutes,
+                    selectedHours: $vm.timeComponents.hours
+                )
+                Button("Start Timer") {
+                    vm.goToTimer()
+                    vm.loadQuickTimer()
+                    vm.startPressed()
                 }
                 List {
                     ForEach(vm.gameTimers) { timer in
@@ -65,18 +48,31 @@ struct GameTimeView: View {
                 switch item {
                 case .create:
                     let create = GameTimer.Draft(id: UUID())
-                    let form = vm.makeForm(gameTimer: create, mode: .create)
+                    let form = vm.makeForm(
+                        gameTimer: create,
+                        mode: .create
+                    )
                     NavigationStack {
                         GameTimeFormView(form: form)
                     }
                 case .edit(let timer):
-                    let form = vm.makeForm(gameTimer: timer.toDraft(), mode: .edit)
+                    let form = vm.makeForm(
+                        gameTimer: timer.toDraft(),
+                        mode: .edit
+                    )
                     NavigationStack {
                         GameTimeFormView(form:form)
                     }
                 case .detail(let timer):
                     NavigationStack {
-                        GameTimerDetailView(gameTimer: timer, vm: vm)
+                        GameTimerDetailView(
+                            vm: vm,
+                            gameTimer: timer,
+                        )
+                    }
+                case .timer:
+                    NavigationStack {
+                        TimerView(vm: vm)
                     }
                 }
             }
