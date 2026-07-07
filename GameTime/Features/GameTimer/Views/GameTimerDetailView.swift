@@ -1,16 +1,14 @@
 import SwiftUI
 
 struct GameTimerDetailView: View {
-    let gameTimer: GameTimer
     @Bindable var vm: GameTimerVM
+    let gameTimer: GameTimer
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text(gameTimer.name)
-                .font(.headline)
-                .multilineTextAlignment(.center)
-            Text(gameTimer.timer.description)
-                .font(.headline)
-                .multilineTextAlignment(.center)
+            TimerDisplayView(
+                name: gameTimer.name,
+                seconds: gameTimer.timer
+            )
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
