@@ -26,7 +26,6 @@ final class GameTimerFormVM {
     var draft: GameTimer.Draft
     var name: String? = ""
     var timeComponents = TimeComponents()
-
     var mode: FormMode
     var onSubmit: ((GameTimer.Draft) -> Void)?
     
