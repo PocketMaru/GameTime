@@ -70,4 +70,21 @@ final class GameTimerFormVM {
     }
 }
 
+extension GameTimerFormVM: Hashable {
+    static func ==(lhs: GameTimerFormVM, rhs: GameTimerFormVM) -> Bool {
+        ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(ObjectIdentifier(self))
+    }
+}
 
+// callbacks can be in views to keep passing viewmodels just for view access to functions
+
+// toolbars can be in switch statements attached to composable views
+
+// create boundaries purposfully with with state driven navigation
+
+// add the isEdit() as a bool that checks if id is nill on the model itself instead of mode
+// 
