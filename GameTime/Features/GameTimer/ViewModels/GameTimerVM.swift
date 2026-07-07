@@ -1,22 +1,65 @@
 import Foundation
 import Observation
 
+// Hashable and identifiable required for sheet navigation,
+// Hashable is a requirement for identifiable.
 enum GameTimerSheet: Hashable, Identifiable {
     case create
     case edit(GameTimer)
     case detail(GameTimer)
-    
+    case timer
     var id: Self { self }
 }
 
+/// `GameTimerVM` is a  feature responsible for:
+/// - Navigation to and from the `Edit` and `Add` modals.
+/// - display of user input for a timer.
+/// - Creating, deleting, and editing of a users saved timer.
+/// - Starting, Pausing, and Resetting of the timer.
+/// Holds reference to `GameTimerFormVM` through callback for submission of ner/edited timers.
+/// `taskRunning` is a `Task`used to simulate the count down of the timer using `.sleep`
 @MainActor
 @Observable
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
-    var timeRemaining: String = ""
-    var taskRunning: Task<Void, Never>?
-    var isRunning: Bool = false
+    var selectedTimer: GameTimer?
+    var timer = TimerVM()
+    var timeComponents = TimeComponents()
+    
+    func gameTimerSelected(_ counter: GameTimer) {
+        selectedTimer = counter
+        timer.load(seconds: counter.timer)
+        sheet = .timer
+    }
+    
+    func loadQuickTimer() {
+        if selectedTimer == nil {
+            let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+            timer.load(seconds: seconds)
+        }
+    }
+    
+    func startPressed() {
+        timer.startTimer()
+    }
+    
+    func pausePressed() {
+        timer.pauseTimer()
+    }
+    
+    func resetPressed() {
+        timer.resetTimer()
+    }
+    
+    func cancelPressed() {
+        timer.cancel()
+        sheet = nil
+    }
+    
+    func goToTimer() {
+        sheet = .timer
+    }
     
     func goToCreate() {
         sheet = .create
@@ -28,39 +71,6 @@ final class GameTimerVM {
     
     func goToDetail(_ counter: GameTimer) {
         sheet = .detail(counter)
-    }
-    func timerSelected(_ counter: GameTimer) {
-        timeRemaining = String(counter.timer)
-    }
-    
-    func startTimer() {
-        isRunning = true
-        taskRunning = Task {
-            defer {
-                isRunning = false
-            }
-            do {
-                while Double(timeRemaining) ?? 0 > 0 && !Task.isCancelled {
-                    try await Task.sleep(for: .seconds(1))
-                    if let timer = Double(timeRemaining) {
-                        timeRemaining = String(timer - 1)
-                    }
-                    if String(timeRemaining) == String(0) {
-                        pauseTimer()
-                    }
-                }
-            } catch {
-                print(error)
-            }
-        }
-    }
-    
-    func pauseTimer() {
-        taskRunning?.cancel()
-    }
-    
-    func resetTimer() {
-        timeRemaining = ""
     }
     
     func confirmCreate(gameTimer: GameTimer) {
@@ -81,7 +91,11 @@ final class GameTimerVM {
             throw GameTimerError.gameTimerNotFound
         }
         gameTimers.remove(at: index)
-        timeRemaining = ""
+        if let selectedTimer = selectedTimer {
+            if selectedTimer.id == counterID {
+                self.selectedTimer = nil
+            }
+        }
     }
     
     func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
