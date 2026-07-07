@@ -4,7 +4,7 @@ extension GameTimer {
     struct Draft: Equatable {
         let id: UUID
         var name: String?
-        var timer: Double?
+        var timer: Int?
     }
 }
 
