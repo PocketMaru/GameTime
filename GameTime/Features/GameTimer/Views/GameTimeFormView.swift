@@ -7,9 +7,11 @@ struct GameTimeFormView: View {
             TextField("Name", text: $form.name.unwrap())
                 .font(.headline)
                 .multilineTextAlignment(.center)
-            TextField("Time", text: $form.timer.unwrap())
-                .font(.headline)
-                .multilineTextAlignment(.center)
+            TimerPickerView(
+                selectedSeconds: $form.timeComponents.seconds,
+                selectedMinutes: $form.timeComponents.minutes,
+                selectedHours: $form.timeComponents.hours,
+            )
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
