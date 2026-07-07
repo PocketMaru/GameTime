@@ -98,18 +98,11 @@ final class GameTimerVM {
     }
     
     func confirmDelete(counterID: UUID) throws {
-        guard let index = gameTimers.firstIndex(where: { $0.id == counterID }) else {
-            throw GameTimerError.gameTimerNotFound
-        }
-        gameTimers.remove(at: index)
-        if let selectedTimer = selectedTimer {
-            if selectedTimer.id == counterID {
-                self.selectedTimer = nil
-            }
-        }
+        gameTimers.removeAll(where: { $0.id == counterID })
     }
     
     func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
+        print("MAKE FORM CALLED")
         return GameTimerFormVM(
             draft: gameTimer,
             mode: mode,
