@@ -4,11 +4,17 @@ import Foundation
 @Observable
 final class TimerVM {
     
-    private var originalSeconds: Int = 0
-    private var remainingSeconds: Int = 0
+    private var originalSeconds: Int
+    private var remainingSeconds: Int
     private var taskRunning: Task<Void, Never>?
-    var isRunning: Bool = false
+    var isRunning: Bool {
+        taskRunning != nil
+    }
     
+    init(seconds: Int) {
+        self.remainingSeconds = seconds
+        self.originalSeconds = seconds
+    }
     var secondsRemaining: Int {
         remainingSeconds % 60
     }
@@ -21,17 +27,8 @@ final class TimerVM {
         remainingSeconds / 3600
     }
     
-    func load(seconds: Int) {
-        remainingSeconds = seconds
-        originalSeconds = seconds
-    }
-    
     func startTimer() {
-        isRunning = true
         taskRunning = Task {
-            defer {
-                isRunning = false
-            }
             do {
                 while remainingSeconds > 0 && !Task.isCancelled {
                     try await Task.sleep(for: .seconds(1))
@@ -48,6 +45,7 @@ final class TimerVM {
     
     func pauseTimer() {
         taskRunning?.cancel()
+        taskRunning = nil
     }
     
     func resetTimer() {
@@ -57,6 +55,17 @@ final class TimerVM {
     
     func cancel() {
         taskRunning?.cancel()
+        taskRunning = nil
         remainingSeconds = 0
+    }
+}
+
+extension TimerVM: Hashable {
+    static func == (lhs: TimerVM, rhs: TimerVM) -> Bool {
+        lhs === rhs
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        ObjectIdentifier(self).hash(into: &hasher)
     }
 }
