@@ -30,58 +30,33 @@ enum GameTimerSheet: Hashable, Identifiable {
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
-    var selectedTimer: GameTimer?
-    var activeForm: GameTimerFormVM?
-    var timer = TimerVM()
     var timeComponents = TimeComponents()
     
     func gameTimerSelected(_ counter: GameTimer) {
-        selectedTimer = counter
-        timer.load(seconds: counter.timer)
-        sheet = .timer
+        let timer = TimerVM(seconds: counter.timer)
+        sheet = .timer(timer)
     }
     
-    func loadQuickTimer() {
-        if selectedTimer == nil {
-            let seconds = TimeConverter.convertToSeconds(time: timeComponents)
-            timer.load(seconds: seconds)
-        }
+    func quickTimer() {
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+        let timer = TimerVM(seconds: seconds)
+        sheet = .timer(timer)
     }
-    
-    func startPressed() {
-        timer.startTimer()
-    }
-    
-    func pausePressed() {
-        timer.pauseTimer()
-    }
-    
-    func resetPressed() {
-        timer.resetTimer()
-    }
-    
-    func cancelPressed() {
-        timer.cancel()
-        sheet = nil
-    }
-    
-    func goToTimer() {
-        sheet = .timer
-    }
-    
     func goToCreate() {
         let draft = GameTimer.Draft(id: UUID())
-        activeForm = makeForm(gameTimer: draft, mode: .create)
-        sheet = .create
+        sheet = .create(makeForm(gameTimer: draft, mode: .create))
     }
     
     func goToEdit(_ counter: GameTimer) {
-        activeForm = makeForm(gameTimer: counter.toDraft(), mode: .edit)
-        sheet = .edit
+        sheet = .edit(makeForm(gameTimer: counter.toDraft(), mode: .edit))
     }
     
     func goToDetail(_ counter: GameTimer) {
         sheet = .detail(counter)
+    }
+    
+    func cancel() {
+        sheet = nil
     }
     
     func confirmCreate(gameTimer: GameTimer) {
