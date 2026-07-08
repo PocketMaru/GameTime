@@ -4,10 +4,10 @@ import Observation
 // Hashable and identifiable required for sheet navigation,
 // Hashable is a requirement for identifiable.
 enum GameTimerSheet: Hashable, Identifiable {
-    case create
-    case edit
+    case create(GameTimerFormVM)
+    case edit(GameTimerFormVM)
     case detail(GameTimer)
-    case timer
+    case timer(TimerVM)
     var id: String {
         switch self {
         case .create: return "create"
