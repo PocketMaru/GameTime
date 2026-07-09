@@ -11,21 +11,23 @@ struct GameTimeView: View {
                     selectedHours: $vm.timeComponents.hours
                 )
                 Button("Quick Timer") {
-                    vm.quickTimer()
+                    vm.loadQuickTimerButtonPressed()
                 }
                 List {
                     ForEach(vm.gameTimers) { timer in
                         Button{
-                            vm.goToDetail(timer)
+                            vm.detailButtonPressed(timer)
                         } label: {
                             GameTimeRowView(
                                 gameTimer: timer,
-                                vm: vm
+                                timerSelected: { timer in
+                                    vm.selectedTimerButtonPressed(timer)
+                                }
                             )
                         }
                         .swipeActions {
                             Button(role: .destructive) {
-                                try? vm.confirmDelete(counterID: timer.id)
+                                try? vm.deleteButtonPressed(counterID: timer.id)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -38,7 +40,7 @@ struct GameTimeView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") {
-                        vm.goToCreate()
+                        vm.createButtonPressed()
                     }
                 }
             }
@@ -60,7 +62,7 @@ struct GameTimeView: View {
                         .toolbar {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Button("Edit") {
-                                    vm.goToEdit(timer)
+                                    vm.editButtonPressed(timer)
                                 }
                             }
                         }
@@ -69,7 +71,7 @@ struct GameTimeView: View {
                     NavigationStack {
                         TimerView(
                             vm: timerVM,
-                            isCanceled: {vm.cancel()}
+                            dismiss: {vm.dismissButtonPressed()}
                         )
                     }
                 }
