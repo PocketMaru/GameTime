@@ -5,36 +5,37 @@ import Foundation
 final class TimerVM {
     
     private var originalSeconds: Int
-    private var remainingSeconds: Int
+    private var secondsRemaining: Int
     private var taskRunning: Task<Void, Never>?
     var isRunning: Bool {
         taskRunning != nil
     }
     
     init(seconds: Int) {
-        self.remainingSeconds = seconds
+        self.secondsRemaining = seconds
         self.originalSeconds = seconds
     }
-    var secondsRemaining: Int {
-        remainingSeconds % 60
+    
+    var remainingSeconds: Int {
+        secondsRemaining % 60
     }
     
-    var minutesRemaining: Int {
-        remainingSeconds % 3600 / 60
+    var remainingMinutes: Int {
+        secondsRemaining % 3600 / 60
     }
     
-    var hourRemaining: Int {
-        remainingSeconds / 3600
+    var remainingHours: Int {
+        secondsRemaining / 3600
     }
     
-    func startTimer() {
+    func startButtonPressed() {
         taskRunning = Task {
             do {
-                while remainingSeconds > 0 && !Task.isCancelled {
+                while secondsRemaining > 0 && !Task.isCancelled {
                     try await Task.sleep(for: .seconds(1))
-                    remainingSeconds -= 1
-                    if remainingSeconds == 0 {
-                        pauseTimer()
+                    secondsRemaining -= 1
+                    if secondsRemaining == 0 {
+                        pauseButtonPressed()
                     }
                 }
             } catch {
@@ -43,20 +44,20 @@ final class TimerVM {
         }
     }
     
-    func pauseTimer() {
+    func pauseButtonPressed() {
         taskRunning?.cancel()
         taskRunning = nil
     }
     
-    func resetTimer() {
-        pauseTimer()
-        remainingSeconds = originalSeconds
+    func resetButtonPressed() {
+        pauseButtonPressed()
+        secondsRemaining = originalSeconds
     }
     
-    func cancel() {
+    func cancelButtonPressed() {
         taskRunning?.cancel()
         taskRunning = nil
-        remainingSeconds = 0
+        secondsRemaining = 0
     }
 }
 

@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct TimerRunningView: View {
-    @Bindable var vm: TimerVM
+    let vm: TimerVM
     var body: some View {
         HStack {
-            Text("\(vm.hourRemaining)")
+            Text("\(vm.remainingHours)")
             Text(":")
-            Text("\(vm.minutesRemaining)")
+            Text("\(vm.remainingMinutes)")
             Text(":")
-            Text("\(vm.secondsRemaining)")
+            Text("\(vm.remainingSeconds)")
         }
     }
 }
