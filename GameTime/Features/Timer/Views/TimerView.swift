@@ -2,7 +2,7 @@ import SwiftUI
 
 struct TimerView: View {
     let vm: TimerVM
-    var dismiss: (() -> Void)
+    let dismiss: () -> Void
     var body: some View {
         TimerRunningView(vm: vm)
         if vm.isRunning {
