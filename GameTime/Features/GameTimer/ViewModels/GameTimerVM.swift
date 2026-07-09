@@ -29,42 +29,47 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
-    var sheet: GameTimerSheet?
     var timeComponents = TimeComponents()
+    var sheet: GameTimerSheet?
     
-    func gameTimerSelected(_ counter: GameTimer) {
+    func selectedTimerButtonPressed(_ counter: GameTimer) {
         let timer = TimerVM(seconds: counter.timer)
         sheet = .timer(timer)
     }
     
-    func quickTimer() {
+    func loadQuickTimerButtonPressed() {
         let seconds = TimeConverter.convertToSeconds(time: timeComponents)
         let timer = TimerVM(seconds: seconds)
         sheet = .timer(timer)
     }
-    func goToCreate() {
+    
+    func createButtonPressed() {
         let draft = GameTimer.Draft(id: UUID())
         sheet = .create(makeForm(gameTimer: draft, mode: .create))
     }
     
-    func goToEdit(_ counter: GameTimer) {
+    func editButtonPressed(_ counter: GameTimer) {
         sheet = .edit(makeForm(gameTimer: counter.toDraft(), mode: .edit))
     }
     
-    func goToDetail(_ counter: GameTimer) {
+    func detailButtonPressed(_ counter: GameTimer) {
         sheet = .detail(counter)
     }
     
-    func cancel() {
-        sheet = nil
+    func deleteButtonPressed(counterID: UUID) throws {
+        gameTimers.removeAll(where: { $0.id == counterID })
     }
     
-    func confirmCreate(gameTimer: GameTimer) {
+    func dismissButtonPressed() {
+        sheet = nil
+    }
+ 
+    private func confirmCreate(gameTimer: GameTimer) {
         gameTimers.append(gameTimer)
         sheet = nil
     }
     
-    func confirmEdit(gameTimer: GameTimer) throws {
+    private func confirmEdit(gameTimer: GameTimer) throws {
         guard let index = gameTimers.firstIndex(where: { $0.id == gameTimer.id } ) else {
             throw GameTimerError.gameTimerNotFound
         }
@@ -72,11 +77,7 @@ final class GameTimerVM {
         sheet = nil
     }
     
-    func confirmDelete(counterID: UUID) throws {
-        gameTimers.removeAll(where: { $0.id == counterID })
-    }
-    
-    func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
+    private func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
         print("MAKE FORM CALLED")
         return GameTimerFormVM(
             draft: gameTimer,
