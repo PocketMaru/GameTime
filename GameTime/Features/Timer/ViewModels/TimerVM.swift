@@ -50,7 +50,8 @@ final class TimerVM {
     }
     
     func resetButtonPressed() {
-        pauseButtonPressed()
+        taskRunning?.cancel()
+        taskRunning = nil
         secondsRemaining = originalSeconds
     }
     
