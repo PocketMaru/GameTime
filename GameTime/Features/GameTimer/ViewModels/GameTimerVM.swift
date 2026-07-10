@@ -56,11 +56,11 @@ final class GameTimerVM {
         sheet = .detail(counter)
     }
     
-    func deleteButtonPressed(counterID: UUID) throws {
+    func deleteButtonPressed(counterID: GameTimer.ID) {
         gameTimers.removeAll(where: { $0.id == counterID })
     }
     
-    func dismissButtonPressed() {
+    func timerViewDismissed() {
         sheet = nil
     }
  

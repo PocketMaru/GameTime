@@ -27,7 +27,7 @@ struct GameTimeView: View {
                         }
                         .swipeActions {
                             Button(role: .destructive) {
-                                try? vm.deleteButtonPressed(counterID: timer.id)
+                                vm.deleteButtonPressed(counterID: timer.id)
                             } label: {
                                 Label("Delete", systemImage: "trash")
                             }
@@ -71,7 +71,7 @@ struct GameTimeView: View {
                     NavigationStack {
                         TimerView(
                             vm: timerVM,
-                            dismiss: {vm.dismissButtonPressed()}
+                            dismiss: {vm.timerViewDismissed()}
                         )
                     }
                 }
