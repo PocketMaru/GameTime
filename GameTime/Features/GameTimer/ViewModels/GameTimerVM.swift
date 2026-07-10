@@ -78,7 +78,6 @@ final class GameTimerVM {
     }
     
     private func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
-        print("MAKE FORM CALLED")
         return GameTimerFormVM(
             draft: gameTimer,
             mode: mode,
