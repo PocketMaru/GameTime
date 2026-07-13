@@ -4,40 +4,38 @@ import Foundation
 @Observable
 final class TimerVM {
     
-    private var originalSeconds: Int = 0
-    private var remainingSeconds: Int = 0
+    private var originalSeconds: Int
+    private var secondsRemaining: Int
     private var taskRunning: Task<Void, Never>?
-    var isRunning: Bool = false
-    
-    var secondsRemaining: Int {
-        remainingSeconds % 60
+    var isRunning: Bool {
+        taskRunning != nil
     }
     
-    var minutesRemaining: Int {
-        remainingSeconds % 3600 / 60
+    init(seconds: Int) {
+        self.secondsRemaining = seconds
+        self.originalSeconds = seconds
     }
     
-    var hourRemaining: Int {
-        remainingSeconds / 3600
+    var remainingSeconds: Int {
+        secondsRemaining % 60
     }
     
-    func load(seconds: Int) {
-        remainingSeconds = seconds
-        originalSeconds = seconds
+    var remainingMinutes: Int {
+        secondsRemaining % 3600 / 60
     }
     
-    func startTimer() {
-        isRunning = true
+    var remainingHours: Int {
+        secondsRemaining / 3600
+    }
+    
+    func startButtonPressed() {
         taskRunning = Task {
-            defer {
-                isRunning = false
-            }
             do {
-                while remainingSeconds > 0 && !Task.isCancelled {
+                while secondsRemaining > 0 && !Task.isCancelled {
                     try await Task.sleep(for: .seconds(1))
-                    remainingSeconds -= 1
-                    if remainingSeconds == 0 {
-                        pauseTimer()
+                    secondsRemaining -= 1
+                    if secondsRemaining == 0 {
+                        pauseButtonPressed()
                     }
                 }
             } catch {
@@ -46,17 +44,30 @@ final class TimerVM {
         }
     }
     
-    func pauseTimer() {
+    func pauseButtonPressed() {
         taskRunning?.cancel()
+        taskRunning = nil
     }
     
-    func resetTimer() {
-        pauseTimer()
-        remainingSeconds = originalSeconds
+    func resetButtonPressed() {
+        taskRunning?.cancel()
+        taskRunning = nil
+        secondsRemaining = originalSeconds
     }
     
-    func cancel() {
+    func cancelButtonPressed() {
         taskRunning?.cancel()
-        remainingSeconds = 0
+        taskRunning = nil
+        secondsRemaining = 0
+    }
+}
+
+extension TimerVM: Hashable {
+    static func == (lhs: TimerVM, rhs: TimerVM) -> Bool {
+        lhs === rhs
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        ObjectIdentifier(self).hash(into: &hasher)
     }
 }

@@ -4,10 +4,10 @@ import Observation
 // Hashable and identifiable required for sheet navigation,
 // Hashable is a requirement for identifiable.
 enum GameTimerSheet: Hashable, Identifiable {
-    case create
-    case edit
+    case create(GameTimerFormVM)
+    case edit(GameTimerFormVM)
     case detail(GameTimer)
-    case timer
+    case timer(TimerVM)
     var id: String {
         switch self {
         case .create: return "create"
@@ -29,67 +29,47 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
-    var sheet: GameTimerSheet?
-    var selectedTimer: GameTimer?
-    var activeForm: GameTimerFormVM?
-    var timer = TimerVM()
     var timeComponents = TimeComponents()
+    var sheet: GameTimerSheet?
     
-    func gameTimerSelected(_ counter: GameTimer) {
-        selectedTimer = counter
-        timer.load(seconds: counter.timer)
-        sheet = .timer
+    func selectedTimerButtonPressed(_ counter: GameTimer) {
+        let timer = TimerVM(seconds: counter.timer)
+        sheet = .timer(timer)
     }
     
-    func loadQuickTimer() {
-        if selectedTimer == nil {
-            let seconds = TimeConverter.convertToSeconds(time: timeComponents)
-            timer.load(seconds: seconds)
-        }
+    func loadQuickTimerButtonPressed() {
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+        let timer = TimerVM(seconds: seconds)
+        sheet = .timer(timer)
     }
     
-    func startPressed() {
-        timer.startTimer()
-    }
-    
-    func pausePressed() {
-        timer.pauseTimer()
-    }
-    
-    func resetPressed() {
-        timer.resetTimer()
-    }
-    
-    func cancelPressed() {
-        timer.cancel()
-        sheet = nil
-    }
-    
-    func goToTimer() {
-        sheet = .timer
-    }
-    
-    func goToCreate() {
+    func createButtonPressed() {
         let draft = GameTimer.Draft(id: UUID())
-        activeForm = makeForm(gameTimer: draft, mode: .create)
-        sheet = .create
+        sheet = .create(makeForm(gameTimer: draft, mode: .create))
     }
     
-    func goToEdit(_ counter: GameTimer) {
-        activeForm = makeForm(gameTimer: counter.toDraft(), mode: .edit)
-        sheet = .edit
+    func editButtonPressed(_ counter: GameTimer) {
+        sheet = .edit(makeForm(gameTimer: counter.toDraft(), mode: .edit))
     }
     
-    func goToDetail(_ counter: GameTimer) {
+    func detailButtonPressed(_ counter: GameTimer) {
         sheet = .detail(counter)
     }
     
-    func confirmCreate(gameTimer: GameTimer) {
+    func deleteButtonPressed(counterID: GameTimer.ID) {
+        gameTimers.removeAll(where: { $0.id == counterID })
+    }
+    
+    func timerViewDismissed() {
+        sheet = nil
+    }
+ 
+    private func confirmCreate(gameTimer: GameTimer) {
         gameTimers.append(gameTimer)
         sheet = nil
     }
     
-    func confirmEdit(gameTimer: GameTimer) throws {
+    private func confirmEdit(gameTimer: GameTimer) throws {
         guard let index = gameTimers.firstIndex(where: { $0.id == gameTimer.id } ) else {
             throw GameTimerError.gameTimerNotFound
         }
@@ -97,12 +77,7 @@ final class GameTimerVM {
         sheet = nil
     }
     
-    func confirmDelete(counterID: UUID) throws {
-        gameTimers.removeAll(where: { $0.id == counterID })
-    }
-    
-    func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
-        print("MAKE FORM CALLED")
+    private func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
         return GameTimerFormVM(
             draft: gameTimer,
             mode: mode,

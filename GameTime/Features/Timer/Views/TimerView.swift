@@ -1,23 +1,25 @@
 import SwiftUI
 
 struct TimerView: View {
-    @Bindable var vm: GameTimerVM
+    let vm: TimerVM
+    let dismiss: () -> Void
     var body: some View {
-        TimerRunningView(vm: vm.timer)
-        if vm.timer.isRunning {
+        TimerRunningView(vm: vm)
+        if vm.isRunning {
             Button("Pause") {
-                vm.pausePressed()
+                vm.pauseButtonPressed()
             }
         } else {
             Button("Start") {
-                vm.startPressed()
+                vm.startButtonPressed()
             }
         }
         Button("Reset") {
-            vm.resetPressed()
+            vm.resetButtonPressed()
         }
         Button("Return") {
-            vm.cancelPressed()
+            vm.cancelButtonPressed()
+            dismiss()
         }
     }
 }

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct GameTimeRowView: View {
     let gameTimer: GameTimer
-    @Bindable var vm: GameTimerVM
+    let timerSelected: (GameTimer) -> Void
     var body: some View {
         HStack(spacing: 10) {
             TimerDisplayView(
@@ -10,9 +10,9 @@ struct GameTimeRowView: View {
                 seconds: gameTimer.timer
             )
             Button {
-                vm.gameTimerSelected(gameTimer)
+                timerSelected(gameTimer)
             } label: {
-                Image(systemName: "play.fill")
+                Image(systemName: "timer.circle")
             }
         }
     }
