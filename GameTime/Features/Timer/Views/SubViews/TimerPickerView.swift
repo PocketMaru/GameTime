@@ -53,5 +53,3 @@ struct TimerPickerView: View {
         }
     }
 }
-// this is used to create hour and hours based on need
-// ^[\(hour) hour](inflect: true)
