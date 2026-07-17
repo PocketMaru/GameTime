@@ -24,6 +24,6 @@ private func timeDisplay(seconds: Int) -> some View {
     }
 }
 
-private func formatStringDouble(_ integer: Int) -> String {
-    Double(integer).formatted(.number.precision(.fractionLength(4)))
+private func formatStringDouble(_ value: Int) -> String {
+    String(format: "%02d", value)
 }
