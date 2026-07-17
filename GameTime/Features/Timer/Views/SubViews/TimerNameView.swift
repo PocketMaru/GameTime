@@ -5,9 +5,9 @@ struct TimerNameView: View {
     var body: some View {
         VStack {
             TextField("Label", text: $name)
-                .foregroundStyle(Color.mainText)
+                .foregroundStyle(Color.primaryText)
                 .frame(width: 250)
-                .bubbleStyle()
+                .textFieldStyle()
         }
     }
 }

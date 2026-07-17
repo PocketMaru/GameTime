@@ -13,8 +13,11 @@ struct GameTimeView: View {
                             selectedSeconds: $vm.timeComponents.seconds,
                             selectedMinutes: $vm.timeComponents.minutes,
                             selectedHours: $vm.timeComponents.hours,
-                            name: $vm.draft.name.unwrap()
                         )
+                        StartStopButtonView()
+                            
+                        TimerNameView(name: $vm.draft.name.unwrap())
+                        
                         Button("Quick Timer") {
                             vm.loadQuickTimerButtonPressed()
                         }
