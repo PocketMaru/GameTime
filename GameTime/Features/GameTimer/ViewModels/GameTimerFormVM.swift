@@ -5,12 +5,8 @@ enum GameTimerError: Error {
     case gameTimerNotFound
     case missingTimer
     case missingName
-    case FailedModelConversion
-}
-
-enum FormMode {
-    case create
-    case edit
+    case failedModelConversion
+    case missingID
 }
 
 /// `GameTimerFormVM` is a form responsible for:

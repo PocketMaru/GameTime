@@ -8,10 +8,6 @@ struct GameTimer: Identifiable, Hashable {
 
 extension GameTimer {
     func toDraft() -> GameTimer.Draft {
-        GameTimer.Draft(
-            id: id,
-            name: name,
-            timer: timer
-        )
+        Draft(self)
     }
 }
