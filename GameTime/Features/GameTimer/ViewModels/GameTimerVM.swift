@@ -3,6 +3,7 @@ import Observation
 
 // Hashable and identifiable required for sheet navigation,
 // Hashable is a requirement for identifiable.
+@MainActor
 enum GameTimerSheet: Hashable, Identifiable {
     case create(GameTimerFormVM)
     case edit(GameTimerFormVM)
