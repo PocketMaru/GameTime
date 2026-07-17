@@ -4,7 +4,6 @@ struct TimerPickerView: View {
     @Binding var selectedSeconds: Int
     @Binding var selectedMinutes: Int
     @Binding var selectedHours: Int
-    @Binding var name: String
     var body: some View {
         ZStack {
                 pickerBubble()
@@ -21,35 +20,34 @@ struct TimerPickerView: View {
                         Text("hours")
                             .frame(alignment: .leading)
                             .opacity(selectedHours != 1 ? 1 : 0)
-                            .foregroundStyle(Color.mainText)
+                            .foregroundStyle(Color.primaryText)
                         Text("hour")
                             .frame(alignment: .leading)
                             .opacity(selectedHours == 1 ? 1 : 0)
-                            .foregroundStyle(Color.mainText)
+                            .foregroundStyle(Color.primaryText)
                     }
                     Picker("Minute", selection: $selectedMinutes) {
                         ForEach(0...59, id: \.self) { minute in
                             Text("\(minute)")
-                                .foregroundStyle(Color.mainText)
+                                .foregroundStyle(Color.primaryText)
                                 .tag(minute)
                         }
                     }
                     Text("min")
-                        .foregroundStyle(Color.mainText)
+                        .foregroundStyle(Color.primaryText)
                     Picker("Second", selection: $selectedSeconds) {
                         ForEach(0...59, id: \.self) { second in
                             Text("\(second)")
-                                .foregroundStyle(Color.mainText)
+                                .foregroundStyle(Color.primaryText)
                                 .tag(second)
                         }
                     }
                     Text("sec")
-                        .foregroundStyle(Color.mainText)
+                        .foregroundStyle(Color.primaryText)
                 }
                 .pickerStyle(.wheel)
                 .labelsHidden()
                 .padding(.horizontal, 12)
-                TimerNameView(name: $name)
             }
             
         }
