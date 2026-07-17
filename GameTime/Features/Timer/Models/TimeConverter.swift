@@ -1,3 +1,5 @@
+import Foundation
+
 struct TimeConverter {
     static func convertFromSeconds(_ seconds: Int) -> TimeComponents {
         let hours = seconds / 3600
@@ -13,3 +15,4 @@ struct TimeConverter {
         (time.hours * 3600) + (time.minutes * 60) + time.seconds
     }
 }
+
