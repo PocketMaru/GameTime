@@ -1,16 +1,16 @@
 import SwiftUI
 
-struct BubbleStyle: ViewModifier {
+struct TextFieldStyle: ViewModifier {
     func body(content: Content) -> some View {
         content
             .padding(.horizontal, 16)
             .frame(height: 52)
             .background {
                 RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color(.secondarySystemBackground))
+                    .fill(Color.textField)
                     .overlay {
                         RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .stroke(Color(.systemGray4), lineWidth: 0.5)
+                            .stroke(.white.opacity(0.08), lineWidth: 0.5)
                     }
                     .shadow(
                         color: .black.opacity(0.06),
@@ -23,7 +23,7 @@ struct BubbleStyle: ViewModifier {
 }
 
 extension View {
-    func bubbleStyle() -> some View {
-        modifier(BubbleStyle())
+    func textFieldStyle() -> some View {
+        modifier(TextFieldStyle())
     }
 }
