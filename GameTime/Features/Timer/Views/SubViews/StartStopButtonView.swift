@@ -8,24 +8,20 @@ struct StartStopButtonView: View {
             Button {
                 /*stopButton*/()
             } label: {
-                Circle()
-                    .fill(Color.secondaryAction).opacity(0.7)
-                    .frame(width: 60, height: 60)
-                    .overlay {
-                        Text("Cancel")
-                            .foregroundStyle(Color.secondaryText).opacity(0.7)
-                    }
+                timerButton(
+                    label: "Cancel",
+                    actionColor: Color.secondaryAction,
+                    textColor: Color.secondaryText
+                )
             }
             Button {
                 /*startButton*/()
             } label: {
-                Circle()
-                    .fill(Color.primaryAction).opacity(0.7)
-                    .frame(width: 60, height: 60)
-                    .overlay {
-                        Text("Start")
-                            .foregroundStyle(Color.primaryText).opacity(0.7)
-                    }
+                timerButton(
+                    label: "Start",
+                    actionColor: Color.primaryAction,
+                    textColor: Color.primaryText
+                )
             }
         }
         .padding(10)
