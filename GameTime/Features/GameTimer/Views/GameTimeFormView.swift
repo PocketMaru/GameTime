@@ -11,6 +11,7 @@ struct GameTimeFormView: View {
                 selectedSeconds: $form.timeComponents.seconds,
                 selectedMinutes: $form.timeComponents.minutes,
                 selectedHours: $form.timeComponents.hours,
+                name: $form.draft.name.unwrap()
             )
         }
         .toolbar {

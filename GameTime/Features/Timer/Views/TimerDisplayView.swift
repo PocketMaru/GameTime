@@ -4,10 +4,11 @@ struct TimerDisplayView: View {
     let name: String
     let seconds: Int
     var body: some View {
-        Text(name)
-            .font(.headline)
-            .multilineTextAlignment(.center)
-        timeDisplay(seconds: seconds)
+        VStack(alignment: .leading) {
+            timeDisplay(seconds: seconds)
+                .font(Font.largeTitle.weight(.bold))
+            Text(name)
+        }
     }
 }
 
@@ -17,8 +18,12 @@ private func timeDisplay(seconds: Int) -> some View {
     HStack {
         Text("\(converted.hours)")
         Text(":")
-        Text("\(converted.minutes)")
+        Text(formatStringDouble(converted.minutes))
         Text(":")
-        Text("\(converted.seconds)")
+        Text(formatStringDouble(converted.seconds))
     }
+}
+
+private func formatStringDouble(_ integer: Int) -> String {
+    Double(integer).formatted(.number.precision(.fractionLength(4)))
 }

@@ -4,34 +4,27 @@ struct GameTimeView: View {
     @Bindable var vm: GameTimerVM
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
-                TimerPickerView(
-                    selectedSeconds: $vm.timeComponents.seconds,
-                    selectedMinutes: $vm.timeComponents.minutes,
-                    selectedHours: $vm.timeComponents.hours
-                )
-                Button("Quick Timer") {
-                    vm.loadQuickTimerButtonPressed()
-                }
-                List {
-                    ForEach(vm.gameTimers) { timer in
-                        Button{
-                            vm.detailButtonPressed(timer)
-                        } label: {
-                            GameTimeRowView(
-                                gameTimer: timer,
-                                timerSelected: { timer in
-                                    vm.selectedTimerButtonPressed(timer)
-                                }
-                            )
+            ZStack {
+                Color("Background")
+                    .ignoresSafeArea()
+                ScrollView {
+                    VStack(spacing: 20) {
+                        TimerPickerView(
+                            selectedSeconds: $vm.timeComponents.seconds,
+                            selectedMinutes: $vm.timeComponents.minutes,
+                            selectedHours: $vm.timeComponents.hours,
+                            name: $vm.draft.name.unwrap()
+                        )
+                        Button("Quick Timer") {
+                            vm.loadQuickTimerButtonPressed()
                         }
-                        .swipeActions {
-                            Button(role: .destructive) {
-                                vm.deleteButtonPressed(counterID: timer.id)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
+                        Text("Resents")
+                        GameTimerListView(
+                            gameTimers: vm.gameTimers,
+                            delete: vm.deleteButtonPressed,
+                            showDetails: vm.detailButtonPressed,
+                            select: vm.selectedTimerButtonPressed
+                        )
                     }
                 }
             }
@@ -73,6 +66,7 @@ struct GameTimeView: View {
                             vm: timerVM,
                             dismiss: {vm.timerViewDismissed()}
                         )
+                        .presentationDragIndicator(.visible)
                     }
                 }
             }

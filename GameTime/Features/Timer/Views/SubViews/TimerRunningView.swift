@@ -10,5 +10,11 @@ struct TimerRunningView: View {
             Text(":")
             Text("\(vm.remainingSeconds)")
         }
+        .monospacedDigit()
     }
 }
+
+// double zero when paused
+// switch statement for model ID
+
+
