@@ -22,20 +22,16 @@ final class GameTimerFormVM {
     var draft: GameTimer.Draft
     var name: String? = ""
     var timeComponents = TimeComponents()
-    var mode: FormMode
     var onSubmit: ((GameTimer.Draft) -> Void)?
     
     init(
         draft: GameTimer.Draft,
-        mode: FormMode,
         onSubmit: ((GameTimer.Draft) -> Void)?
     ) {
-        print("FORM INIT")
         self.draft = draft
-        self.mode = mode
         self.onSubmit = onSubmit
         
-        if mode == .edit {
+        if draft.formState == .update {
             name = draft.name
             if let seconds = draft.timer {
                 let converted = TimeConverter.convertFromSeconds(seconds)
@@ -75,12 +71,3 @@ extension GameTimerFormVM: Hashable {
         hasher.combine(ObjectIdentifier(self))
     }
 }
-
-// callbacks can be in views to keep passing viewmodels just for view access to functions
-
-// toolbars can be in switch statements attached to composable views
-
-// create boundaries purposfully with with state driven navigation
-
-// add the isEdit() as a bool that checks if id is nill on the model itself instead of mode
-// 

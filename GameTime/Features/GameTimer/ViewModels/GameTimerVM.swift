@@ -19,7 +19,6 @@ enum GameTimerSheet: Hashable, Identifiable {
     }
 }
 
-/// `GameTimerVM` is a  feature responsible for:
 /// - Navigation to and from the `Edit` and `Add` modals.
 /// - display of user input for a timer.
 /// - Creating, deleting, and editing of a users saved timer.
@@ -30,8 +29,13 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var gameTimers: [GameTimer] = []
-    var timeComponents = TimeComponents()
+    var timeComponents = TimeComponents(
+        seconds: 0,
+        minutes: 0,
+        hours: 1
+    )
     var sheet: GameTimerSheet?
+    var draft = GameTimer.Draft()
     
     func selectedTimerButtonPressed(_ counter: GameTimer) {
         let timer = TimerVM(seconds: counter.timer)
@@ -45,12 +49,11 @@ final class GameTimerVM {
     }
     
     func createButtonPressed() {
-        let draft = GameTimer.Draft(id: UUID())
-        sheet = .create(makeForm(gameTimer: draft, mode: .create))
+        sheet = .create(makeForm(gameTimer: .init()))
     }
     
-    func editButtonPressed(_ counter: GameTimer) {
-        sheet = .edit(makeForm(gameTimer: counter.toDraft(), mode: .edit))
+    func editButtonPressed(_ gameTimer: GameTimer) {
+        sheet = .edit(makeForm(gameTimer: .init(gameTimer)))
     }
     
     func detailButtonPressed(_ counter: GameTimer) {
@@ -78,19 +81,18 @@ final class GameTimerVM {
         sheet = nil
     }
     
-    private func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
+    private func makeForm(gameTimer: GameTimer.Draft) -> GameTimerFormVM {
         return GameTimerFormVM(
             draft: gameTimer,
-            mode: mode,
             onSubmit: { [weak self] draft in
                 guard let self else { return }
-                if mode == .create {
+                if draft.formState == .create {
                     do {
                         try confirmCreate(gameTimer: draft.toModel())
                     } catch {
                         print(error)
                     }
-                } else if mode == .edit {
+                } else if draft.formState == .update {
                     do {
                         try confirmEdit(gameTimer: draft.toModel())
                     } catch {
