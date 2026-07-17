@@ -12,7 +12,7 @@ struct TimerPickerView: View {
                     Picker("Hours", selection: $selectedHours) {
                         ForEach(0...24, id: \.self) { hour in
                             Text("\(hour)")
-                                .foregroundStyle(Color.mainText)
+                                .foregroundStyle(Color.primaryText)
                                 .tag(hour)
                         }
                     }

@@ -31,8 +31,13 @@ struct GameTimeView: View {
                     }
                 }
             }
-            .navigationTitle("Game Time")
-            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Game Time")
+                        .font(.largeTitle)
+                        .foregroundStyle(Color.primaryText)
+                }
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") {
