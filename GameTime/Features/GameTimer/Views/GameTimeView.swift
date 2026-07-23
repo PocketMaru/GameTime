@@ -39,7 +39,7 @@ struct GameTimeView: View {
                                 currentTimers: vm.currentTimers,
                                 delete: vm.deleteCurrentTimerButtonPressed,
                                 showDetails: vm.detailButtonPressed,
-                                timerAction: vm.currentTimerButtonPressed,
+                                timerAction: vm.currentTimerRowButtonPressed,
                             )
                         }
                         ResentTimerListView(
@@ -69,18 +69,23 @@ struct GameTimeView: View {
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("plus") {
+                        Button {
                             vm.createButtonPressed()
+                        } label: {
+                            Image(systemName: "plus")
                         }
                     }
                 }
             }
             .navigationDestination(for: CurrentTimer.self) { timer in
-                NavigationStack {
-                    GameTimerDetailView(
-                        currentTimer: timer,
-                    )
-                }
+                GameTimerDetailView(
+                    currentTimer: timer,
+                    start: { vm.currentTimerStartButtonPressed(timer) },
+                    stop: { vm.cancelButtonPressed(timer) },
+                    save: { name in
+                        vm.saveNameButtonPressed(timer: timer, name: name)
+                    }
+                )
             }
             .sheet(item: $vm.sheet) { item in
                 switch item {

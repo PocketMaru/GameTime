@@ -62,6 +62,18 @@ final class GameTimerVM {
         )
         currentTimers.append(currentTimer)
         currentTimer.timer.start()
+        if sheet != nil {
+            dismissSheet()
+        }
+    }
+    
+    func saveNameButtonPressed(timer: CurrentTimer, name: String) {
+        if let index = resentTimers.firstIndex(of: timer.model) {
+            resentTimers[index].name = name
+            if let index = currentTimers.firstIndex(of: timer) {
+                currentTimers[index].model.name = name
+            }
+        }
     }
     
     func createButtonPressed() {
