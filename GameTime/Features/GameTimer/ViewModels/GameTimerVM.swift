@@ -36,17 +36,21 @@ final class GameTimerVM {
             name: name,
             timeComponents: timeComponents
         )
-        let timer = TimerVM(seconds: timeComponents.seconds)
-        timer.start()
         if sheet != nil {
             dismissSheet()
         }
     }
     
-    func currentTimerButtonPressed(_ currentTimer: CurrentTimer) {
+    func currentTimerRowButtonPressed(_ currentTimer: CurrentTimer) {
         if currentTimer.timer.isRunning {
             currentTimer.timer.pause()
         } else {
+            currentTimer.timer.start()
+        }
+    }
+    
+    func currentTimerStartButtonPressed(_ currentTimer: CurrentTimer) {
+        if !currentTimer.timer.isRunning {
             currentTimer.timer.start()
         }
     }
@@ -76,6 +80,7 @@ final class GameTimerVM {
     func cancelButtonPressed(_ timer: CurrentTimer? = nil) {
         guard let timer else { return }
         timer.timer.cancel()
+        currentTimers.removeAll(where: { $0.id == timer.id })
         path.removeAll()
     }
     
@@ -120,7 +125,10 @@ final class GameTimerVM {
         }
         
         currentTimer.timer.start()
-        print(currentTimer.timer.isRunning)
+        
+        if currentTimer.timer.secondsRemaining == 0 {
+            currentTimers.removeAll(where: { $0.id == currentTimer.id })
+        }
     }
     
     private func dismissSheet() {
