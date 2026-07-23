@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUI
 
 struct TimeConverter {
     static func convertFromSeconds(_ seconds: Int) -> TimeComponents {
@@ -14,5 +15,15 @@ struct TimeConverter {
     ) -> Int {
         (time.hours * 3600) + (time.minutes * 60) + time.seconds
     }
+    
+    static func toLabel(_ time: TimeComponents) -> String {
+        "\(time.hours) hr, \(time.minutes) min, \(time.seconds) sec"
+    }
+    
+    static func timeFormatter(_ value: Int) -> String {
+        String(format: "%02d", value)
+    }
 }
+
+
 
