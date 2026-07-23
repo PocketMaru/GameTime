@@ -1,13 +1,38 @@
 import SwiftUI
 
 struct GameTimerDetailView: View {
-    let gameTimer: GameTimer
+    var currentTimer: CurrentTimer
+    let start: () -> Void
+    let stop: () -> Void
+    @State private var label: String
+    private var timeComponent: TimeComponents {
+        TimeConverter.convertFromSeconds(currentTimer.model.timer)
+    }
+    
+    init(currentTimer: CurrentTimer) {
+        self.currentTimer = currentTimer
+        _label = State(initialValue: currentTimer.model.name)
+        self.start = { currentTimer.timer.start() }
+        self.stop = { currentTimer.timer.cancel() }
+    }
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            TimerDisplayView(
-                name: gameTimer.name,
-                seconds: gameTimer.timer
-            )
+        ZStack {
+            Color("Background")
+                .ignoresSafeArea()
+            VStack(spacing: 10) {
+                ProgressLabelDetailAnimation(
+                    progress: Double(currentTimer.timer.progress),
+                    secondsRemaining: currentTimer.timer.secondsRemaining
+                )
+                StartStopButtonView(
+                    start: { start() },
+                    stop: { stop() }
+                )
+                TimerNameView(name: $label)
+            }
         }
+        
     }
 }
+
+
