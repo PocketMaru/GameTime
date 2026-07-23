@@ -29,6 +29,6 @@ struct ProgressLabelDetailAnimation: View {
                 .font(Font.largeTitle.weight(.bold))
             }
         }
-        .frame(width: 220, height: 220)
+        .frame(width: 350, height: 350)
     }
 }

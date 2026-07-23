@@ -56,7 +56,9 @@ struct GameTimeView: View {
                         .font(.largeTitle)
                         .foregroundStyle(Color.primaryText)
                 }
-                if vm.currentTimers.isEmpty {
+                if vm.currentTimers.isEmpty && vm.resentTimers.isEmpty {
+                    EmptyView()
+                } else if vm.currentTimers.isEmpty && !vm.resentTimers.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button("Edit") {
                             // mass delete selection

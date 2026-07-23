@@ -8,9 +8,9 @@ struct ResentTimerListView: View {
         if !resentTimers.isEmpty {
             Text("Resents")
                 .foregroundStyle(Color.primaryText)
-                .font(.title2)
-                .frame(alignment: .leading)
-                .padding(5)
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
             Divider()
         }
         ForEach(resentTimers) { timer in

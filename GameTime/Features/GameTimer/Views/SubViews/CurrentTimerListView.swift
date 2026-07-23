@@ -7,11 +7,11 @@ struct CurrentTimerListView: View {
     let timerAction: (CurrentTimer) -> Void
     var body: some View {
         if !currentTimers.isEmpty {
-            Text("Resents")
+            Text("Timers")
                 .foregroundStyle(Color.primaryText)
                 .font(.title2)
-                .frame(alignment: .leading)
-                .padding(5)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
             Divider()
         }
         ForEach(currentTimers) { timer in

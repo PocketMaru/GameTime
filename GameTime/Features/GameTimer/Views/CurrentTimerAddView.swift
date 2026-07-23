@@ -18,7 +18,6 @@ struct CurrentTimerAddView: View {
                     TimerNameView(
                         name: $name
                     )
-                
                     // presets view
                 
                     ResentTimerListView(
@@ -40,11 +39,13 @@ struct CurrentTimerAddView: View {
                 Text("Timer")
             }
             ToolbarItem(placement: .navigationBarTrailing) {
-                Button("play.fill") {
+                Button {
                     vm.startNewTimerButtonPressed(
                         name: name,
                         timeComponents: timeComponents
                     )
+                } label: {
+                    Image(systemName: "play.fill")
                 }
             }
         }
