@@ -2,31 +2,50 @@ import SwiftUI
 
 struct GameTimeView: View {
     @Bindable var vm: GameTimerVM
+    @State private var name: String = ""
+    @State private var timeComponents = TimeComponents(
+        seconds: 0,
+        minutes: 0,
+        hours: 1
+    )
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $vm.path) {
             ZStack {
                 Color("Background")
                     .ignoresSafeArea()
                 ScrollView {
                     VStack(spacing: 20) {
-                        TimerPickerView(
-                            selectedSeconds: $vm.timeComponents.seconds,
-                            selectedMinutes: $vm.timeComponents.minutes,
-                            selectedHours: $vm.timeComponents.hours,
-                        )
-                        StartStopButtonView()
+                        if vm.currentTimers.isEmpty {
+                            TimerPickerView(
+                                selectedSeconds: $timeComponents.seconds,
+                                selectedMinutes: $timeComponents.minutes,
+                                selectedHours: $timeComponents.hours,
+                            )
                             
-                        TimerNameView(name: $vm.draft.name.unwrap())
-                        
-                        Button("Quick Timer") {
-                            vm.loadQuickTimerButtonPressed()
+                            StartStopButtonView(
+                                start: { vm.startNewTimerButtonPressed(
+                                    name: name,
+                                    timeComponents: timeComponents
+                                )},
+                                stop: { vm.cancelButtonPressed() }
+                            )
+                            
+                            TimerNameView(
+                                name: $name
+                            )
+                            
+                        } else {
+                            CurrentTimerListView(
+                                currentTimers: vm.currentTimers,
+                                delete: vm.deleteCurrentTimerButtonPressed,
+                                showDetails: vm.detailButtonPressed,
+                                timerAction: vm.currentTimerButtonPressed,
+                            )
                         }
-                        Text("Resents")
-                        GameTimerListView(
-                            gameTimers: vm.gameTimers,
-                            delete: vm.deleteButtonPressed,
-                            showDetails: vm.detailButtonPressed,
-                            select: vm.selectedTimerButtonPressed
+                        ResentTimerListView(
+                            resentTimers: vm.resentTimers,
+                            delete: vm.deleteResentTimerButtonPressed,
+                            timerAction: vm.resentTimerButtonPressed
                         )
                     }
                 }
@@ -37,47 +56,46 @@ struct GameTimeView: View {
                         .font(.largeTitle)
                         .foregroundStyle(Color.primaryText)
                 }
-            }
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Add") {
-                        vm.createButtonPressed()
+                if vm.currentTimers.isEmpty {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Edit") {
+                            // mass delete selection
+                        }
                     }
+                } else {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Edit") {
+                            // mass delete selection
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("plus") {
+                            vm.createButtonPressed()
+                        }
+                    }
+                }
+            }
+            .navigationDestination(for: CurrentTimer.self) { timer in
+                NavigationStack {
+                    GameTimerDetailView(
+                        currentTimer: timer,
+                    )
                 }
             }
             .sheet(item: $vm.sheet) { item in
                 switch item {
-                case .create(let form):
+                case .create:
                     NavigationStack {
-                        GameTimeFormView(form: form)
-                    }
-                case .edit(let form):
-                    NavigationStack {
-                        GameTimeFormView(form: form)
-                    }
-                case .detail(let timer):
-                    NavigationStack {
-                        GameTimerDetailView(
-                            gameTimer: timer,
+                        CurrentTimerAddView(
+                            name: $name,
+                            timeComponents: $timeComponents,
+                            vm: vm
                         )
-                        .toolbar {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button("Edit") {
-                                    vm.editButtonPressed(timer)
-                                }
-                            }
-                        }
-                    }
-                case .timer(let timerVM):
-                    NavigationStack {
-                        TimerView(
-                            vm: timerVM,
-                            dismiss: {vm.timerViewDismissed()}
-                        )
-                        .presentationDragIndicator(.visible)
                     }
                 }
             }
+            
+
         }
     }
 }
