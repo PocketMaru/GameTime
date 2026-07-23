@@ -1,105 +1,139 @@
 import Foundation
 import Observation
 
+enum GameTimerError: Error {
+    case gameTimerNotFound
+    case missingTimer
+    case failedModelConversion
+    case missingID
+}
+
 // Hashable and identifiable required for sheet navigation,
 // Hashable is a requirement for identifiable.
 @MainActor
 enum GameTimerSheet: Hashable, Identifiable {
-    case create(GameTimerFormVM)
-    case edit(GameTimerFormVM)
-    case detail(GameTimer)
-    case timer(TimerVM)
+    case create
     var id: String {
         switch self {
         case .create: return "create"
-        case .edit: return "edit"
-        case .detail: return "detail"
-        case .timer: return "timer"
         }
     }
 }
 
-/// - Navigation to and from the `Edit` and `Add` modals.
-/// - display of user input for a timer.
-/// - Creating, deleting, and editing of a users saved timer.
-/// - Starting, Pausing, and Resetting of the timer.
-/// Holds reference to `GameTimerFormVM` through callback for submission of ner/edited timers.
-/// `taskRunning` is a `Task`used to simulate the count down of the timer using `.sleep`
 @MainActor
 @Observable
 final class GameTimerVM {
-    var gameTimers: [GameTimer] = []
-    var timeComponents = TimeComponents(
-        seconds: 0,
-        minutes: 0,
-        hours: 1
-    )
+    var currentTimers: [CurrentTimer] = []
+    var resentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
-    var draft = GameTimer.Draft()
+    var path: [CurrentTimer] = []
     
-    func selectedTimerButtonPressed(_ counter: GameTimer) {
-        let timer = TimerVM(seconds: counter.timer)
-        sheet = .timer(timer)
+    func startNewTimerButtonPressed(
+        name: String,
+        timeComponents: TimeComponents
+    ) {
+        createTimer(
+            name: name,
+            timeComponents: timeComponents
+        )
+        let timer = TimerVM(seconds: timeComponents.seconds)
+        timer.start()
+        if sheet != nil {
+            dismissSheet()
+        }
     }
     
-    func loadQuickTimerButtonPressed() {
-        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
-        let timer = TimerVM(seconds: seconds)
-        sheet = .timer(timer)
+    func currentTimerButtonPressed(_ currentTimer: CurrentTimer) {
+        if currentTimer.timer.isRunning {
+            currentTimer.timer.pause()
+        } else {
+            currentTimer.timer.start()
+        }
+    }
+    
+    func resentTimerButtonPressed(_ model: GameTimer) {
+        let currentTimer = CurrentTimer(
+            model: model,
+            timer: TimerVM(seconds: model.timer)
+        )
+        currentTimers.append(currentTimer)
+        currentTimer.timer.start()
     }
     
     func createButtonPressed() {
-        sheet = .create(makeForm(gameTimer: .init()))
+        sheet = .create
     }
     
-    func editButtonPressed(_ gameTimer: GameTimer) {
-        sheet = .edit(makeForm(gameTimer: .init(gameTimer)))
+    func detailButtonPressed(model: CurrentTimer.ID) {
+        guard let timer = currentTimers.first(where: { $0.id == model }) else { return }
+        path.append(timer)
     }
     
-    func detailButtonPressed(_ counter: GameTimer) {
-        sheet = .detail(counter)
+    func dismissSheetButtonPressed() {
+        dismissSheet()
     }
     
-    func deleteButtonPressed(counterID: GameTimer.ID) {
-        gameTimers.removeAll(where: { $0.id == counterID })
+    func cancelButtonPressed(_ timer: CurrentTimer? = nil) {
+        guard let timer else { return }
+        timer.timer.cancel()
+        path.removeAll()
     }
     
-    func timerViewDismissed() {
-        sheet = nil
+    func deleteResentTimerButtonPressed(counterID: GameTimer.ID) {
+        resentTimers.removeAll(where: { $0.id == counterID })
+    }
+    
+    func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
+        currentTimers.removeAll(where: { $0.id == counterID })
     }
  
-    private func confirmCreate(gameTimer: GameTimer) {
-        gameTimers.append(gameTimer)
-        sheet = nil
-    }
-    
-    private func confirmEdit(gameTimer: GameTimer) throws {
-        guard let index = gameTimers.firstIndex(where: { $0.id == gameTimer.id } ) else {
-            throw GameTimerError.gameTimerNotFound
-        }
-        gameTimers[index] = gameTimer
-        sheet = nil
-    }
-    
-    private func makeForm(gameTimer: GameTimer.Draft) -> GameTimerFormVM {
-        return GameTimerFormVM(
-            draft: gameTimer,
-            onSubmit: { [weak self] draft in
-                guard let self else { return }
-                if draft.formState == .create {
-                    do {
-                        try confirmCreate(gameTimer: draft.toModel())
-                    } catch {
-                        print(error)
-                    }
-                } else if draft.formState == .update {
-                    do {
-                        try confirmEdit(gameTimer: draft.toModel())
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
+    private func createTimer(
+        name: String,
+        timeComponents: TimeComponents
+    ) {
+        guard validate(
+            timeComponents: timeComponents
+        ) else { return }
+        
+        let finalName = name.isEmpty ? TimeConverter.toLabel(timeComponents) : name
+        
+        let model = GameTimer(
+            id: UUID(),
+            name: finalName,
+            timer: TimeConverter.convertToSeconds(time: timeComponents)
         )
+        
+        let currentTimer = CurrentTimer(
+            model: model,
+            timer: TimerVM(seconds: model.timer)
+        )
+        
+        let exists = resentTimers.contains {
+            $0.timer == model.timer &&
+            $0.name == model.name
+        }
+        
+        currentTimers.append(currentTimer)
+        
+        if !exists {
+            resentTimers.append(model)
+        }
+        
+        currentTimer.timer.start()
+        print(currentTimer.timer.isRunning)
+    }
+    
+    private func dismissSheet() {
+        sheet = nil
+    }
+    private func validate(
+        timeComponents: TimeComponents
+    ) -> Bool {
+        var errors: [GameTimerError] = []
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+        if seconds == 0 {
+            errors.append(.missingTimer)
+        }
+        return errors.isEmpty
     }
 }
