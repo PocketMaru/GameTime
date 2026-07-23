@@ -17,7 +17,19 @@ struct TimeConverter {
     }
     
     static func toLabel(_ time: TimeComponents) -> String {
-        "\(time.hours) hr, \(time.minutes) min, \(time.seconds) sec"
+        if time.hours == 0 && time.minutes == 0 {
+            return "\(time.seconds) sec"
+        }
+        if time.hours == 0 && time.seconds == 0 {
+            return "\(time.minutes) min"
+        }
+        if time.hours == 0 {
+            return "\(time.minutes) min, \(time.seconds) sec"
+        }
+        if time.minutes == 0 && time.seconds == 0 {
+            return "\(time.hours) hr"
+        }
+        return "\(time.hours) hr, \(time.minutes) min, \(time.seconds) sec"
     }
     
     static func timeFormatter(_ value: Int) -> String {
