@@ -1,29 +1,23 @@
 import SwiftUI
 
 struct TimerDisplayView: View {
+    let secondsRemaining: Int
     let name: String
-    let seconds: Int
+    private var converted: TimeComponents {
+        TimeConverter.convertFromSeconds(secondsRemaining)
+    }
     var body: some View {
         VStack(alignment: .leading) {
-            timeDisplay(seconds: seconds)
-                .font(Font.largeTitle.weight(.bold))
+            HStack(spacing: 2) {
+                Text("\(converted.hours)")
+                Text(":")
+                Text(TimeConverter.timeFormatter(converted.minutes))
+                Text(":")
+                Text(TimeConverter.timeFormatter(converted.seconds))
+            }
+            .monospacedDigit()
+            .font(Font.largeTitle.weight(.bold))
             Text(name)
         }
     }
-}
-
-@ViewBuilder
-private func timeDisplay(seconds: Int) -> some View {
-    let converted = TimeConverter.convertFromSeconds(seconds)
-    HStack {
-        Text("\(converted.hours)")
-        Text(":")
-        Text(formatStringDouble(converted.minutes))
-        Text(":")
-        Text(formatStringDouble(converted.seconds))
-    }
-}
-
-private func formatStringDouble(_ value: Int) -> String {
-    String(format: "%02d", value)
 }
