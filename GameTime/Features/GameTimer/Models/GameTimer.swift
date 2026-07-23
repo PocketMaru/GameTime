@@ -5,9 +5,3 @@ struct GameTimer: Identifiable, Hashable {
     var name: String
     var timer: Int
 }
-
-extension GameTimer {
-    func toDraft() -> GameTimer.Draft {
-        Draft(self)
-    }
-}
