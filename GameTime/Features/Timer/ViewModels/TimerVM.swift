@@ -8,6 +8,7 @@ final class TimerVM {
     private var originalSeconds: Int
     private var taskRunning: Task<Void, Never>?
     
+    var onComplete: (() -> Void)?
     var progress: Double {
         Double(secondsRemaining) / Double(originalSeconds)
     }
@@ -28,7 +29,8 @@ final class TimerVM {
                     try await Task.sleep(for: .seconds(1))
                     secondsRemaining -= 1
                     if secondsRemaining == 0 {
-                        pause()
+                        taskCompleted()
+                        onComplete?()
                     }
                 }
             } catch {
@@ -46,6 +48,11 @@ final class TimerVM {
         taskRunning?.cancel()
         taskRunning = nil
         secondsRemaining = 0
+    }
+    
+    private func taskCompleted() {
+        taskRunning?.cancel()
+        taskRunning = nil
     }
 }
 
