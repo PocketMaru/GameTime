@@ -19,5 +19,6 @@ struct CurrentTimerRowView: View {
                 )
             }
         }
+        .padding(.horizontal, 12)
     }
 }

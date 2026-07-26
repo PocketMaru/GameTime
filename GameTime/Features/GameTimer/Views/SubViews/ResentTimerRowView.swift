@@ -4,7 +4,7 @@ struct ResentTimerRowView: View {
     let resentTimer: GameTimer
     let timerAction: () -> Void
     var body: some View {
-        HStack(spacing: 5) {
+        HStack(spacing: 10) {
             TimerDisplayView(
                 secondsRemaining: resentTimer.timer,
                 name: resentTimer.name,
@@ -22,6 +22,7 @@ struct ResentTimerRowView: View {
                     }
             }
         }
+        .padding(.horizontal, 10)
     }
 }
 
