@@ -1,8 +1,12 @@
 import SwiftUI
 
 struct CurrentTimerAddView: View {
-    @Binding var name: String
-    @Binding var timeComponents: TimeComponents
+    @State private var name: String = ""
+    @State private var timeComponents: TimeComponents = TimeComponents(
+        seconds: 0,
+        minutes: 0,
+        hours: 1
+    )
     let vm: GameTimerVM
     var body: some View {
         ZStack {

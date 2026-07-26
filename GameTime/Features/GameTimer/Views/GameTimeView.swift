@@ -94,8 +94,6 @@ struct GameTimeView: View {
                 case .create:
                     NavigationStack {
                         CurrentTimerAddView(
-                            name: $name,
-                            timeComponents: $timeComponents,
                             vm: vm
                         )
                     }
