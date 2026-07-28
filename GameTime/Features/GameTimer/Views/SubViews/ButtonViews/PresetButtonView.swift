@@ -12,13 +12,13 @@ struct PresetButtonView: View {
                 .fill(Color.primaryAction).opacity(0.7)
                 .frame(width: 80, height: 80)
                 .overlay {
-                    VStack(spacing: 5) {
+                    VStack(spacing: 2) {
                         timeLabel(value)
-                            .font(.system(size: 25, weight: .semibold))
+                            .font(.title2)
                             .foregroundStyle(Color.primaryText)
                             .opacity(0.7)
                         Text(title)
-                            .font(.system(size: 20, weight: .bold))
+                            .font(.title2)
                             .foregroundStyle(Color.secondaryAction)
                             .opacity(0.7)
                     }
