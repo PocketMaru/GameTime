@@ -86,6 +86,7 @@ final class GameTimerVM {
         dismissSheet()
     }
     
+    
     func cancelButtonPressed(_ timer: CurrentTimer? = nil) {
         guard let timer else { return }
         timer.timer.cancel()
@@ -101,6 +102,13 @@ final class GameTimerVM {
         currentTimers.removeAll(where: { $0.id == counterID })
     }
  
+// MARK: - Private Access Functions
+    
+    /// - Creates a new `CurrentTimer` object.
+    /// - Creates a name based on the selected timer if the label is empty.
+    /// - Parameters:
+    ///   - name: String representing the name of the timer, if the value is empty is it assigned based on `timeComponents`.
+    ///   - timeComponents: Data type structureing the users selected timer.
     private func createTimer(
         name: String,
         timeComponents: TimeComponents
@@ -137,6 +145,9 @@ final class GameTimerVM {
         onCompleteAction(currentTimer)
     }
     
+    
+    /// - Creates a toggle for the timer based on its current state.
+    /// - Parameter timer: `CurrentTimer` object holds its own `TimerVM`, allowing control of individual timers just by passing the object.
     private func timerController(_ timer: CurrentTimer) {
         if timer.timer.isRunning {
             timer.timer.pause()
@@ -145,16 +156,26 @@ final class GameTimerVM {
         }
     }
     
+    /// - Callback function allowing a `CurrentTimer` object to notify when it has completed.
+    /// - Holds weak reference to self due to `TimerVM` being a reference type.
+    /// - On completion of a `CurrentTimer`, it is removed from the current timers.
+    /// - Parameter currentTimer: Takes in a `CurrentTimerObject`
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
         currentTimer.timer.onComplete = { [weak self] in
             guard let self else { return }
             currentTimers.removeAll(where: { $0.id == currentTimer.id })
         }
     }
+    
+    /// - Dismissal of the `GameTimerSheet`
     private func dismissSheet() {
         sheet = nil
     }
     
+    
+    /// - Validates the users time input to ensure it is greater than zero seconds.
+    /// - Parameter timeComponents: Data type structuring the users selected timer.
+    /// - Returns: A `Boolean` value based on `GameTimerError`'s caught.
     private func validate(
         timeComponents: TimeComponents
     ) -> Bool {
