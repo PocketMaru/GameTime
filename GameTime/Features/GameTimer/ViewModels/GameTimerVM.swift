@@ -39,16 +39,16 @@ final class GameTimerVM {
         if sheet != nil {
             dismissSheet()
         }
+        
     }
     
     func currentTimerRowButtonPressed(_ currentTimer: CurrentTimer) {
         timerController(currentTimer)
+        onCompleteAction(currentTimer)
     }
     
-    func currentTimerStartButtonPressed(_ currentTimer: CurrentTimer) {
-        if !currentTimer.timer.isRunning {
-            currentTimer.timer.start()
-        }
+    func pauseButtonPressed(_ currentTimer: CurrentTimer) {
+        timerController(currentTimer)
     }
     
     func resentTimerButtonPressed(_ model: GameTimer) {

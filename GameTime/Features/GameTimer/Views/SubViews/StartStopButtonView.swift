@@ -3,6 +3,7 @@ import SwiftUI
 struct StartStopButtonView: View {
     let start: () -> Void
     let stop: () -> Void
+    let isRunning: Bool
     var body: some View {
         HStack(spacing: 160) {
             Button {
@@ -24,7 +25,7 @@ struct StartStopButtonView: View {
                     .fill(Color.primaryAction).opacity(0.7)
                     .frame(width: 60, height: 60)
                     .overlay {
-                        Text("Start")
+                        Text(isRunning ? "Pause" : "Start")
                             .foregroundStyle(Color.primaryText)
                             .opacity(0.7)
                     }

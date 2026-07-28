@@ -27,7 +27,8 @@ struct GameTimeView: View {
                                     name: name,
                                     timeComponents: timeComponents
                                 )},
-                                stop: { vm.cancelButtonPressed() }
+                                stop: { vm.cancelButtonPressed() },
+                                isRunning: false
                             )
                             
                             TimerNameView(
@@ -82,7 +83,7 @@ struct GameTimeView: View {
             .navigationDestination(for: CurrentTimer.self) { timer in
                 GameTimerDetailView(
                     currentTimer: timer,
-                    start: { vm.currentTimerStartButtonPressed(timer) },
+                    start: { vm.pauseButtonPressed(timer) },
                     stop: { vm.cancelButtonPressed(timer) },
                     save: { name in
                         vm.saveNameButtonPressed(timer: timer, name: name)

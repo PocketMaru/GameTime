@@ -33,7 +33,8 @@ struct GameTimerDetailView: View {
                 )
                 StartStopButtonView(
                     start: { start() },
-                    stop: { stop() }
+                    stop: { stop() },
+                    isRunning: currentTimer.timer.isRunning
                 )
                 TimerNameView(name: $label)
             }
