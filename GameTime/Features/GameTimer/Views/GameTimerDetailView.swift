@@ -5,40 +5,28 @@ struct GameTimerDetailView: View {
     let start: () -> Void
     let stop: () -> Void
     let save: (String) -> Void
-    @State private var label: String
+    @State private var label: String = ""
     private var timeComponent: TimeComponents {
         TimeConverter.convertFromSeconds(currentTimer.model.timer)
     }
-    
-    init(
-        currentTimer: CurrentTimer,
-        start: @escaping () -> Void,
-        stop: @escaping () -> Void,
-        save: @escaping (String) -> Void,
-    ) {
-        self.currentTimer = currentTimer
-        _label = State(initialValue: currentTimer.model.name)
-        self.start = start
-        self.stop = stop
-        self.save = save
-    }
     var body: some View {
-        ZStack {
-            Color("Background")
-                .ignoresSafeArea()
-            VStack(spacing: 10) {
-                ProgressLabelDetailAnimation(
-                    progress: Double(currentTimer.timer.progress),
-                    secondsRemaining: currentTimer.timer.secondsRemaining
-                )
-                StartStopButtonView(
-                    start: { start() },
-                    stop: { stop() },
-                    isRunning: currentTimer.timer.isRunning
-                )
-                TimerNameView(name: $label)
-            }
+        VStack(spacing: 10) {
+            ProgressLabelDetailAnimation(
+                progress: Double(currentTimer.timer.progress),
+                secondsRemaining: currentTimer.timer.secondsRemaining
+            )
+            StartStopButtonView(
+                start: { start() },
+                stop: { stop() },
+                isRunning: currentTimer.timer.isRunning
+            )
+            TimerNameView(name: $label)
         }
+        .onAppear {
+            label = currentTimer.model.name
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.background))
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Button("Save") {
@@ -47,7 +35,6 @@ struct GameTimerDetailView: View {
             }
         }
     }
-    
 }
 
 
