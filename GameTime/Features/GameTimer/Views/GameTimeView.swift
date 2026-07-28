@@ -57,19 +57,15 @@ struct GameTimeView: View {
                         .font(.largeTitle)
                         .foregroundStyle(Color.primaryText)
                 }
-                if vm.currentTimers.isEmpty && vm.resentTimers.isEmpty {
+                if vm.currentTimers.isEmpty && vm.recentTimers.isEmpty {
                     EmptyView()
-                } else if vm.currentTimers.isEmpty && !vm.resentTimers.isEmpty {
+                } else if vm.currentTimers.isEmpty && !vm.recentTimers.isEmpty {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Edit") {
-                            // mass delete selection
-                        }
+                        EditButton()
                     }
                 } else {
                     ToolbarItem(placement: .topBarTrailing) {
-                        Button("Edit") {
-                            // mass delete selection
-                        }
+                        EditButton()
                     }
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {

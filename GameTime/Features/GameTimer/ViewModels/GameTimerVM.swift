@@ -24,7 +24,7 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var currentTimers: [CurrentTimer] = []
-    var resentTimers: [GameTimer] = []
+    var recentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
     var path: [CurrentTimer] = []
     
@@ -51,7 +51,7 @@ final class GameTimerVM {
         timerController(currentTimer)
     }
     
-    func resentTimerButtonPressed(_ model: GameTimer) {
+    func recentTimerButtonPressed(_ model: GameTimer) {
         let currentTimer = CurrentTimer(
             model: model,
             timer: TimerVM(seconds: model.timer)
@@ -65,8 +65,8 @@ final class GameTimerVM {
     }
     
     func saveNameButtonPressed(timer: CurrentTimer, name: String) {
-        if let index = resentTimers.firstIndex(of: timer.model) {
-            resentTimers[index].name = name
+        if let index = recentTimers.firstIndex(of: timer.model) {
+            recentTimers[index].name = name
             if let index = currentTimers.firstIndex(of: timer) {
                 currentTimers[index].model.name = name
             }
@@ -94,14 +94,21 @@ final class GameTimerVM {
         path.removeAll()
     }
     
-    func deleteResentTimerButtonPressed(counterID: GameTimer.ID) {
-        resentTimers.removeAll(where: { $0.id == counterID })
+    func deleteRecentTimerButtonPressed(counterID: GameTimer.ID) {
+        recentTimers.removeAll(where: { $0.id == counterID })
     }
     
     func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
         currentTimers.removeAll(where: { $0.id == counterID })
     }
- 
+    
+    func deleteCurrentTimers(at offsets: IndexSet) {
+        currentTimers.remove(atOffsets: offsets)
+    }
+
+    func deleteRecentTimers(at offsets: IndexSet) {
+        recentTimers.remove(atOffsets: offsets)
+    }
 // MARK: - Private Access Functions
     
     /// - Creates a new `CurrentTimer` object.
@@ -130,7 +137,7 @@ final class GameTimerVM {
             timer: TimerVM(seconds: model.timer)
         )
         
-        let exists = resentTimers.contains {
+        let exists = recentTimers.contains {
             $0.timer == model.timer &&
             $0.name == model.name
         }
@@ -138,7 +145,7 @@ final class GameTimerVM {
         currentTimers.append(currentTimer)
         
         if !exists {
-            resentTimers.append(model)
+            recentTimers.append(model)
         }
         
         timerController(currentTimer)

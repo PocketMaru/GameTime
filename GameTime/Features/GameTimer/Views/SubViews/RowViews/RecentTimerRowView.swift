@@ -1,13 +1,13 @@
 import SwiftUI
 
-struct ResentTimerRowView: View {
-    let resentTimer: GameTimer
+struct RecentTimerRowView: View {
+    let recentTimer: GameTimer
     let timerAction: () -> Void
     var body: some View {
         HStack(spacing: 10) {
             TimerDisplayView(
-                secondsRemaining: resentTimer.timer,
-                name: resentTimer.name,
+                secondsRemaining: recentTimer.timer,
+                name: recentTimer.name,
             )
             Button {
                 timerAction()
