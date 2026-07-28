@@ -14,11 +14,7 @@ enum GameTimerError: Error {
 @MainActor
 enum GameTimerSheet: Hashable, Identifiable {
     case create
-    var id: String {
-        switch self {
-        case .create: return "create"
-        }
-    }
+    var id: Self { self }
 }
 
 @MainActor
