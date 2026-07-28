@@ -13,42 +13,39 @@ struct GameTimeView: View {
             ZStack {
                 Color("Background")
                     .ignoresSafeArea()
-                ScrollView {
-                    VStack(spacing: 20) {
-                        if vm.currentTimers.isEmpty {
-                            TimerPickerView(
-                                selectedSeconds: $timeComponents.seconds,
-                                selectedMinutes: $timeComponents.minutes,
-                                selectedHours: $timeComponents.hours,
-                            )
-                            
-                            StartStopButtonView(
-                                start: { vm.startNewTimerButtonPressed(
-                                    name: name,
-                                    timeComponents: timeComponents
-                                )},
-                                stop: { vm.cancelButtonPressed() },
-                                isRunning: false
-                            )
-                            
-                            TimerNameView(
-                                name: $name
-                            )
-                            
-                        } else {
-                            CurrentTimerListView(
-                                currentTimers: vm.currentTimers,
-                                delete: vm.deleteCurrentTimerButtonPressed,
-                                showDetails: vm.detailButtonPressed,
-                                timerAction: vm.currentTimerRowButtonPressed,
-                            )
-                        }
-                        ResentTimerListView(
-                            resentTimers: vm.resentTimers,
-                            delete: vm.deleteResentTimerButtonPressed,
-                            timerAction: vm.resentTimerButtonPressed
+                
+                VStack(spacing: 20) {
+                    if vm.currentTimers.isEmpty {
+                        TimerPickerView(
+                            selectedSeconds: $timeComponents.seconds,
+                            selectedMinutes: $timeComponents.minutes,
+                            selectedHours: $timeComponents.hours,
+                        )
+                        
+                        StartStopButtonView(
+                            start: { vm.startNewTimerButtonPressed(
+                                name: name,
+                                timeComponents: timeComponents
+                            )},
+                            stop: { vm.cancelButtonPressed() },
+                            isRunning: false
+                        )
+                        
+                        TimerNameView(
+                            name: $name
                         )
                     }
+                    TimerListView(
+                        currentTimers: vm.currentTimers,
+                        recentTimers: vm.recentTimers,
+                        deleteCurrent: vm.deleteCurrentTimerButtonPressed,
+                        deleteRecent: vm.deleteRecentTimerButtonPressed,
+                        deleteCurrentTimers: vm.deleteCurrentTimers,
+                        deleteRecentTimers: vm.deleteRecentTimers,
+                        currentTimerAction: vm.currentTimerRowButtonPressed,
+                        recentTimerAction: vm.recentTimerButtonPressed,
+                        showDetails: vm.detailButtonPressed
+                    )
                 }
             }
             .toolbar {
@@ -96,8 +93,6 @@ struct GameTimeView: View {
                     }
                 }
             }
-            
-
         }
     }
 }
