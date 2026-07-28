@@ -58,6 +58,7 @@ final class GameTimerVM {
         )
         currentTimers.append(currentTimer)
         currentTimer.timer.start()
+        onCompleteAction(currentTimer)
         if sheet != nil {
             dismissSheet()
         }
@@ -133,7 +134,7 @@ final class GameTimerVM {
         }
         
         timerController(currentTimer)
-        
+        onCompleteAction(currentTimer)
     }
     
     private func timerController(_ timer: CurrentTimer) {
@@ -144,6 +145,12 @@ final class GameTimerVM {
         }
     }
     
+    private func onCompleteAction(_ currentTimer: CurrentTimer) {
+        currentTimer.timer.onComplete = { [weak self] in
+            guard let self else { return }
+            currentTimers.removeAll(where: { $0.id == currentTimer.id })
+        }
+    }
     private func dismissSheet() {
         sheet = nil
     }
