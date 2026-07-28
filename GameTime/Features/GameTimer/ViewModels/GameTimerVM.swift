@@ -72,12 +72,12 @@ final class GameTimerVM {
     }
     
     func saveNameButtonPressed(timer: CurrentTimer, name: String) {
-        if let index = recentTimers.firstIndex(of: timer.model) {
-            recentTimers[index].name = name
-            if let index = currentTimers.firstIndex(of: timer) {
-                currentTimers[index].model.name = name
-            }
-        }
+        guard
+            let recentTimerIndex = recentTimers.firstIndex(of: timer.model),
+            let currentTimerIndex = currentTimers.firstIndex(of: timer)
+        else { return  }
+        recentTimers[recentTimerIndex].name = name
+        currentTimers[currentTimerIndex].model.name = name
     }
     
     func createButtonPressed() {
