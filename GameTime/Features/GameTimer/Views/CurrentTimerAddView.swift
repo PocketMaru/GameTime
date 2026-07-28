@@ -13,22 +13,23 @@ struct CurrentTimerAddView: View {
             Color("Background")
                 .ignoresSafeArea()
             VStack(spacing: 10) {
-                    TimerPickerView(
-                        selectedSeconds: $timeComponents.seconds,
-                        selectedMinutes: $timeComponents.minutes,
-                        selectedHours: $timeComponents.hours,
-                    )
-                    
-                    TimerNameView(
-                        name: $name
-                    )
-                    // presets view
+                TimerPickerView(
+                    selectedSeconds: $timeComponents.seconds,
+                    selectedMinutes: $timeComponents.minutes,
+                    selectedHours: $timeComponents.hours,
+                )
                 
-                    ResentTimerListView(
-                        resentTimers: vm.resentTimers,
-                        delete: vm.deleteResentTimerButtonPressed,
-                        timerAction: vm.resentTimerButtonPressed,
-                    )
+                TimerNameView(
+                    name: $name
+                )
+                
+                PresetTimerRowView(action: vm.startPresetTimerButtonPressed)
+                
+                RecentTimerListView(
+                    recentTimers: vm.recentTimers,
+                    delete: vm.deleteRecentTimerButtonPressed,
+                    timerAction: vm.recentTimerButtonPressed,
+                )
             }
         }
         .toolbar {

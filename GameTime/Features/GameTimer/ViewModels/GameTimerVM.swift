@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 
 enum GameTimerError: Error {
     case gameTimerNotFound
@@ -40,6 +41,16 @@ final class GameTimerVM {
             dismissSheet()
         }
         
+    }
+    
+    func startPresetTimerButtonPressed(_ timer: TimeComponents) {
+        createTimer(
+            name: "",
+            timeComponents: timer
+        )
+        if sheet != nil {
+            dismissSheet()
+        }
     }
     
     func currentTimerRowButtonPressed(_ currentTimer: CurrentTimer) {
