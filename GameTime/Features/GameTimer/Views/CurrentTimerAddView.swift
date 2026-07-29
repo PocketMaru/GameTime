@@ -34,10 +34,8 @@ struct CurrentTimerAddView: View {
         }
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
-                Button {
+                Button(role: .close) {
                     vm.dismissSheetButtonPressed()
-                } label: {
-                    Image(systemName: "xmark")
                 }
             }
             ToolbarItem(placement: .principal) {
