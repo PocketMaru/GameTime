@@ -3,8 +3,15 @@ import SwiftUI
 struct PresetButtonView: View {
     let value: TimeComponents
     let action: (TimeComponents) -> Void
+    // Modeled for one unit presets only
     var title: String {
-        value.hours == 0 ? "MIN" : "HR"
+        if value.hours == 0 && value.minutes == 0 {
+            return "SEC"
+        } else if value.hours == 0 && value.seconds == 0 {
+            return "MIN"
+        } else {
+            return "HR"
+        }
     }
     var body: some View {
         Button {
