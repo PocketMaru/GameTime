@@ -8,7 +8,7 @@ final class TimerVM {
     private var originalSeconds: Int
     private var taskRunning: Task<Void, Never>?
     
-    var onComplete: (() -> Void)?
+    var setupOnCompleteAction: (() -> Void)?
     var progress: Double {
         Double(secondsRemaining) / Double(originalSeconds)
     }
@@ -30,7 +30,7 @@ final class TimerVM {
                     secondsRemaining -= 1
                     if secondsRemaining == 0 {
                         taskCompleted()
-                        onComplete?()
+                        setupOnCompleteAction?()
                     }
                 }
             } catch {
