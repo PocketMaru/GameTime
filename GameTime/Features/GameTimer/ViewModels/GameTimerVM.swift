@@ -116,13 +116,14 @@ final class GameTimerVM {
     func deleteRecentTimers(at offsets: IndexSet) {
         recentTimers.remove(atOffsets: offsets)
     }
+    
 // MARK: - Private Access Functions
     
-    /// - Creates a new `CurrentTimer` object.
-    /// - Creates a name based on the selected timer if the label is empty.
-    /// - Parameters:
-    ///   - name: String representing the name of the timer, if the value is empty is it assigned based on `timeComponents`.
-    ///   - timeComponents: Data type structureing the users selected timer.
+    // - Creates a new `CurrentTimer` object.
+    // - Creates a name based on the selected timer if the label is empty.
+    // - Parameters:
+    //   - name: String representing the name of the timer, if the value is     empty is it assigned based on `timeComponents`.
+    //   - timeComponents: Data type structureing the users selected timer.
     private func createTimer(
         name: String,
         timeComponents: TimeComponents
