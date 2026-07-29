@@ -50,12 +50,12 @@ final class GameTimerVM {
     }
     
     func currentTimerRowButtonPressed(_ currentTimer: CurrentTimer) {
-        timerController(currentTimer)
+        currentTimer.timer.toggleTimerControl()
         onCompleteAction(currentTimer)
     }
     
     func pauseButtonPressed(_ currentTimer: CurrentTimer) {
-        timerController(currentTimer)
+        currentTimer.timer.toggleTimerControl()
     }
     
     func recentTimerButtonPressed(_ model: GameTimer) {
@@ -155,20 +155,12 @@ final class GameTimerVM {
             recentTimers.append(model)
         }
         
-        timerController(currentTimer)
+        currentTimer.timer.toggleTimerControl()
         onCompleteAction(currentTimer)
     }
     
-    private func timerController(_ timer: CurrentTimer) {
-        if timer.timer.isRunning {
-            timer.timer.pause()
-        } else {
-            timer.timer.start()
-        }
-    }
-    
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
-        currentTimer.timer.onComplete = { [weak self] in
+        currentTimer.timer.setupOnCompleteAction = { [weak self] in
             guard let self else { return }
             currentTimers.removeAll(where: { $0.id == currentTimer.id })
         }
