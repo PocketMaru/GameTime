@@ -4,9 +4,15 @@ import Foundation
 @Observable
 final class TimerVM {
     
+    private(set) var secondsRemaining: Int
     private var originalSeconds: Int
-    private var secondsRemaining: Int
     private var taskRunning: Task<Void, Never>?
+    
+    var setupOnCompleteAction: (() -> Void)?
+    var progress: Double {
+        Double(secondsRemaining) / Double(originalSeconds)
+    }
+    
     var isRunning: Bool {
         taskRunning != nil
     }
@@ -16,26 +22,15 @@ final class TimerVM {
         self.originalSeconds = seconds
     }
     
-    var remainingSeconds: Int {
-        secondsRemaining % 60
-    }
-    
-    var remainingMinutes: Int {
-        secondsRemaining % 3600 / 60
-    }
-    
-    var remainingHours: Int {
-        secondsRemaining / 3600
-    }
-    
-    func startButtonPressed() {
+    func start() {
         taskRunning = Task {
             do {
                 while secondsRemaining > 0 && !Task.isCancelled {
                     try await Task.sleep(for: .seconds(1))
                     secondsRemaining -= 1
                     if secondsRemaining == 0 {
-                        pauseButtonPressed()
+                        taskCompleted()
+                        setupOnCompleteAction?()
                     }
                 }
             } catch {
@@ -44,21 +39,28 @@ final class TimerVM {
         }
     }
     
-    func pauseButtonPressed() {
+    func toggleTimerControl() {
+        if isRunning {
+            pause()
+        } else {
+            start()
+        }
+    }
+    
+    func pause() {
         taskRunning?.cancel()
         taskRunning = nil
     }
     
-    func resetButtonPressed() {
-        taskRunning?.cancel()
-        taskRunning = nil
-        secondsRemaining = originalSeconds
-    }
-    
-    func cancelButtonPressed() {
+    func cancel() {
         taskRunning?.cancel()
         taskRunning = nil
         secondsRemaining = 0
+    }
+    
+    private func taskCompleted() {
+        taskRunning?.cancel()
+        taskRunning = nil
     }
 }
 

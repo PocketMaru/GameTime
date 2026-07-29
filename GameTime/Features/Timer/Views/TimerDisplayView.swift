@@ -1,24 +1,35 @@
 import SwiftUI
 
 struct TimerDisplayView: View {
+    let secondsRemaining: Int
     let name: String
-    let seconds: Int
-    var body: some View {
-        Text(name)
-            .font(.headline)
-            .multilineTextAlignment(.center)
-        timeDisplay(seconds: seconds)
+    private var converted: TimeComponents {
+        TimeConverter.convertFromSeconds(secondsRemaining)
     }
-}
-
-@ViewBuilder
-private func timeDisplay(seconds: Int) -> some View {
-    let converted = TimeConverter.convertFromSeconds(seconds)
-    HStack {
-        Text("\(converted.hours)")
-        Text(":")
-        Text("\(converted.minutes)")
-        Text(":")
-        Text("\(converted.seconds)")
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack(spacing: 2) {
+                if converted.hours > 0 {
+                    Text("\(converted.hours)")
+                    Text(":")
+                    Text(TimeConverter.timeFormatter(converted.minutes))
+                    Text(":")
+                    Text(TimeConverter.timeFormatter(converted.seconds))
+                } else if converted.hours == 0 {
+                    Text(TimeConverter.timeFormatter(converted.minutes))
+                    Text(":")
+                    Text(TimeConverter.timeFormatter(converted.seconds))
+                } else if converted.hours == 0 && converted.minutes == 0 {
+                    Text(TimeConverter.timeFormatter(converted.seconds))
+                }
+                
+            }
+            .monospacedDigit()
+            .foregroundStyle(Color.primaryText)
+            .font(Font.largeTitle.weight(.bold))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            Text(name)
+                .foregroundStyle(Color.primaryText)
+        }
     }
 }

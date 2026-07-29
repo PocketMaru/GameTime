@@ -1,102 +1,185 @@
 import Foundation
 import Observation
+import SwiftUI
+
+enum GameTimerError: Error {
+    case gameTimerNotFound
+    case missingTimer
+    case failedModelConversion
+    case missingID
+}
 
 // Hashable and identifiable required for sheet navigation,
 // Hashable is a requirement for identifiable.
+@MainActor
 enum GameTimerSheet: Hashable, Identifiable {
-    case create(GameTimerFormVM)
-    case edit(GameTimerFormVM)
-    case detail(GameTimer)
-    case timer(TimerVM)
-    var id: String {
-        switch self {
-        case .create: return "create"
-        case .edit: return "edit"
-        case .detail: return "detail"
-        case .timer: return "timer"
-        }
-    }
+    case create
+    var id: Self { self }
 }
 
-/// `GameTimerVM` is a  feature responsible for:
-/// - Navigation to and from the `Edit` and `Add` modals.
-/// - display of user input for a timer.
-/// - Creating, deleting, and editing of a users saved timer.
-/// - Starting, Pausing, and Resetting of the timer.
-/// Holds reference to `GameTimerFormVM` through callback for submission of ner/edited timers.
-/// `taskRunning` is a `Task`used to simulate the count down of the timer using `.sleep`
 @MainActor
 @Observable
 final class GameTimerVM {
-    var gameTimers: [GameTimer] = []
-    var timeComponents = TimeComponents()
+    var currentTimers: [CurrentTimer] = []
+    var recentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
+    var path: [CurrentTimer] = []
     
-    func selectedTimerButtonPressed(_ counter: GameTimer) {
-        let timer = TimerVM(seconds: counter.timer)
-        sheet = .timer(timer)
+    func startNewTimerButtonPressed(
+        name: String,
+        timeComponents: TimeComponents
+    ) {
+        createTimer(
+            name: name,
+            timeComponents: timeComponents
+        )
+        if sheet != nil {
+            dismissSheet()
+        }
+        
     }
     
-    func loadQuickTimerButtonPressed() {
-        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
-        let timer = TimerVM(seconds: seconds)
-        sheet = .timer(timer)
+    func startPresetTimerButtonPressed(_ timer: TimeComponents) {
+        createTimer(
+            name: "",
+            timeComponents: timer
+        )
+        if sheet != nil {
+            dismissSheet()
+        }
+    }
+    
+    func currentTimerRowButtonPressed(_ currentTimer: CurrentTimer) {
+        currentTimer.timer.toggleTimerControl()
+        onCompleteAction(currentTimer)
+    }
+    
+    func pauseButtonPressed(_ currentTimer: CurrentTimer) {
+        currentTimer.timer.toggleTimerControl()
+    }
+    
+    func recentTimerButtonPressed(_ model: GameTimer) {
+        let currentTimer = CurrentTimer(
+            model: model,
+            timer: TimerVM(seconds: model.timer)
+        )
+        currentTimers.append(currentTimer)
+        currentTimer.timer.start()
+        onCompleteAction(currentTimer)
+        if sheet != nil {
+            dismissSheet()
+        }
+    }
+    
+    func saveNameButtonPressed(timer: CurrentTimer, name: String) {
+        guard
+            let recentTimerIndex = recentTimers.firstIndex(of: timer.model),
+            let currentTimerIndex = currentTimers.firstIndex(of: timer)
+        else { return  }
+        recentTimers[recentTimerIndex].name = name
+        currentTimers[currentTimerIndex].model.name = name
     }
     
     func createButtonPressed() {
-        let draft = GameTimer.Draft(id: UUID())
-        sheet = .create(makeForm(gameTimer: draft, mode: .create))
+        sheet = .create
     }
     
-    func editButtonPressed(_ counter: GameTimer) {
-        sheet = .edit(makeForm(gameTimer: counter.toDraft(), mode: .edit))
+    func detailButtonPressed(model: CurrentTimer.ID) {
+        guard let timer = currentTimers.first(where: { $0.id == model }) else { return }
+        path.append(timer)
     }
     
-    func detailButtonPressed(_ counter: GameTimer) {
-        sheet = .detail(counter)
+    func dismissSheetButtonPressed() {
+        dismissSheet()
     }
     
-    func deleteButtonPressed(counterID: GameTimer.ID) {
-        gameTimers.removeAll(where: { $0.id == counterID })
+    
+    func cancelButtonPressed(_ timer: CurrentTimer? = nil) {
+        guard let timer else { return }
+        timer.timer.cancel()
+        currentTimers.removeAll(where: { $0.id == timer.id })
+        path.removeAll()
     }
     
-    func timerViewDismissed() {
-        sheet = nil
-    }
- 
-    private func confirmCreate(gameTimer: GameTimer) {
-        gameTimers.append(gameTimer)
-        sheet = nil
+    func deleteRecentTimerButtonPressed(counterID: GameTimer.ID) {
+        recentTimers.removeAll(where: { $0.id == counterID })
     }
     
-    private func confirmEdit(gameTimer: GameTimer) throws {
-        guard let index = gameTimers.firstIndex(where: { $0.id == gameTimer.id } ) else {
-            throw GameTimerError.gameTimerNotFound
-        }
-        gameTimers[index] = gameTimer
-        sheet = nil
+    func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
+        currentTimers.removeAll(where: { $0.id == counterID })
     }
     
-    private func makeForm(gameTimer: GameTimer.Draft, mode: FormMode) -> GameTimerFormVM {
-        return GameTimerFormVM(
-            draft: gameTimer,
-            mode: mode,
-            onSubmit: { [weak self] draft in
-                guard let self else { return }
-                if mode == .create {
-                    do {
-                        try confirmCreate(gameTimer: draft.toModel())
-                    } catch {
-                        print(error)
-                    }
-                } else if mode == .edit {
-                    do {
-                        try confirmEdit(gameTimer: draft.toModel())
-                    } catch {
-                        print(error)
-                    }
-                }
-            }
+    func deleteCurrentTimers(at offsets: IndexSet) {
+        currentTimers.remove(atOffsets: offsets)
+    }
+
+    func deleteRecentTimers(at offsets: IndexSet) {
+        recentTimers.remove(atOffsets: offsets)
+    }
+    
+// MARK: - Private Access Functions
+    
+    // - Creates a new `CurrentTimer` object.
+    // - Creates a name based on the selected timer if the label is empty.
+    // - Parameters:
+    //   - name: String representing the name of the timer, if the value is     empty is it assigned based on `timeComponents`.
+    //   - timeComponents: Data type structureing the users selected timer.
+    private func createTimer(
+        name: String,
+        timeComponents: TimeComponents
+    ) {
+        guard validate(
+            timeComponents: timeComponents
+        ) else { return }
+        
+        let finalName = name.isEmpty ? TimeConverter.toLabel(timeComponents) : name
+        
+        let model = GameTimer(
+            id: UUID(),
+            name: finalName,
+            timer: TimeConverter.convertToSeconds(time: timeComponents)
         )
+        
+        let currentTimer = CurrentTimer(
+            model: model,
+            timer: TimerVM(seconds: model.timer)
+        )
+        
+        let exists = recentTimers.contains {
+            $0.timer == model.timer &&
+            $0.name == model.name
+        }
+        
+        currentTimers.append(currentTimer)
+        
+        if !exists {
+            recentTimers.append(model)
+        }
+        
+        currentTimer.timer.toggleTimerControl()
+        onCompleteAction(currentTimer)
+    }
+    
+    private func onCompleteAction(_ currentTimer: CurrentTimer) {
+        currentTimer.timer.setupOnCompleteAction = { [weak self] in
+            guard let self else { return }
+            currentTimers.removeAll(where: { $0.id == currentTimer.id })
+        }
+    }
+    
+    // Dismissal of the `GameTimerSheet`
+    private func dismissSheet() {
+        sheet = nil
+    }
+    
+    private func validate(
+        timeComponents: TimeComponents
+    ) -> Bool {
+        var errors: [GameTimerError] = []
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+        if seconds == 0 {
+            errors.append(.missingTimer)
+        }
+        return errors.isEmpty
     }
 }
