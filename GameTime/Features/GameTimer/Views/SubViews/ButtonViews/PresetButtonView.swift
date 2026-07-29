@@ -24,10 +24,12 @@ struct PresetButtonView: View {
                     VStack(spacing: 2) {
                         timeLabel(value)
                             .font(.title2)
+                            .dynamicTypeSize(.large)
                             .foregroundStyle(Color.primaryText)
                             .opacity(0.7)
                         Text(title)
                             .font(.title2)
+                            .dynamicTypeSize(.large)
                             .foregroundStyle(Color.secondaryAction)
                             .opacity(0.7)
                     }
