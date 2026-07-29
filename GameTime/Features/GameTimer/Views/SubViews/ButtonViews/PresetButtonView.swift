@@ -2,8 +2,14 @@ import SwiftUI
 
 struct PresetButtonView: View {
     let value: TimeComponents
-    let title: String
     let action: (TimeComponents) -> Void
+    var title: String {
+        if value.hours == 0 {
+            title = "MIN"
+        } else {
+            title = "HR"
+        }
+    }
     var body: some View {
         Button {
             action(value)
