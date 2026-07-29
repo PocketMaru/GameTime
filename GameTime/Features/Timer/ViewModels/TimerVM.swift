@@ -39,6 +39,14 @@ final class TimerVM {
         }
     }
     
+    func toggleTimerControl() {
+        if isRunning {
+            pause()
+        } else {
+            start()
+        }
+    }
+    
     func pause() {
         taskRunning?.cancel()
         taskRunning = nil
