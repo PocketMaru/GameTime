@@ -4,11 +4,7 @@ struct PresetButtonView: View {
     let value: TimeComponents
     let action: (TimeComponents) -> Void
     var title: String {
-        if value.hours == 0 {
-            title = "MIN"
-        } else {
-            title = "HR"
-        }
+        value.hours == 0 ? "MIN" : "HR"
     }
     var body: some View {
         Button {
