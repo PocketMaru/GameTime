@@ -181,6 +181,9 @@
 			);
 			mainGroup = 533393472FF5E409009AD7A5;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5390D4F7301D0C4A002525AF /* XCRemoteSwiftPackageReference "sqlite-data" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 533393512FF5E409009AD7A5 /* Products */;
 			projectDirPath = "";
@@ -548,6 +551,17 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5390D4F7301D0C4A002525AF /* XCRemoteSwiftPackageReference "sqlite-data" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/sqlite-data";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.8.2;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
 	};
 	rootObject = 533393482FF5E409009AD7A5 /* Project object */;
 	validationLevel = 1;
