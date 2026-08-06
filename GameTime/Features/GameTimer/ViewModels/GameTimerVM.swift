@@ -27,27 +27,44 @@ final class GameTimerVM {
     var path: [CurrentTimer] = []
     
     @ObservationIgnored
-    @Dependency(\.gameTimerClient) private var gameTimerClient
+    @Dependency(\.gameTimeClient) private var gameTimeClient
+    
+    func onAppear() {
+        do {
+            let records = try fetchAll()
+            recentTimers = records
+        } catch {
+            // Catch Errors
+        }
+    }
     
     func startNewTimerButtonPressed(
         name: String,
         timeComponents: TimeComponents
     ) {
-        createTimer(
-            name: name,
-            timeComponents: timeComponents
-        )
+        do {
+            try createTimer(
+                name: name,
+                timeComponents: timeComponents
+            )
+        } catch {
+            print("New timer creation failed", error)
+        }
+        
         if sheet != nil {
             dismissSheet()
         }
-        
     }
     
     func startPresetTimerButtonPressed(_ timer: TimeComponents) {
-        createTimer(
-            name: "",
-            timeComponents: timer
-        )
+        do {
+            try  createTimer(
+                name: "",
+                timeComponents: timer
+            )
+        } catch {
+            // Catch Errors
+        }
         if sheet != nil {
             dismissSheet()
         }
@@ -131,24 +148,20 @@ final class GameTimerVM {
     private func createTimer(
         name: String,
         timeComponents: TimeComponents
-    ) {
+    ) throws {
         guard validate(
             timeComponents: timeComponents
         ) else { return }
         
         let finalName = name.isEmpty ? TimeConverter.toLabel(timeComponents) : name
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
         
-        let model = GameTimer(
-            id: UUID(),
-            name: finalName,
-            timer: TimeConverter.convertToSeconds(time: timeComponents)
-        )
         
+        let model = try gameTimeClient.create(finalName, seconds)
         let currentTimer = CurrentTimer(
             model: model,
             timer: TimerVM(seconds: model.timer)
         )
-        
         let exists = recentTimers.contains {
             $0.timer == model.timer &&
             $0.name == model.name
@@ -162,6 +175,11 @@ final class GameTimerVM {
         
         currentTimer.timer.toggleTimerControl()
         onCompleteAction(currentTimer)
+        
+    }
+    
+    private func fetchAll() throws -> [GameTimer] {
+        try gameTimeClient.fetchAll()
     }
     
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
