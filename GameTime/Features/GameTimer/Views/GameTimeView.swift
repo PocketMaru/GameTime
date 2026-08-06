@@ -43,6 +43,9 @@ struct GameTimeView: View {
                     showDetails: vm.detailButtonPressed
                 )
             }
+            .task {
+                vm.onAppear()
+            }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Color(.background))
             .toolbar {
