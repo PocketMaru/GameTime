@@ -165,9 +165,10 @@ final class GameTimerVM {
     }
     
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
+        let timerID = currentTimer.id
         currentTimer.timer.setupOnCompleteAction = { [weak self] in
             guard let self else { return }
-            currentTimers.removeAll(where: { $0.id == currentTimer.id })
+            currentTimers.removeAll(where: { $0.id == timerID })
         }
     }
     
