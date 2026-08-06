@@ -97,8 +97,13 @@ final class GameTimerVM {
             let recentTimerIndex = recentTimers.firstIndex(of: timer.model),
             let currentTimerIndex = currentTimers.firstIndex(of: timer)
         else { return  }
-        recentTimers[recentTimerIndex].name = name
-        currentTimers[currentTimerIndex].model.name = name
+        do {
+            try gameTimeClient.updateName(timer.model.id, name)
+            recentTimers[recentTimerIndex].name = name
+            currentTimers[currentTimerIndex].model.name = name
+        } catch {
+            // Catch Errors
+        }
     }
     
     func createButtonPressed() {
@@ -123,7 +128,12 @@ final class GameTimerVM {
     }
     
     func deleteRecentTimerButtonPressed(counterID: GameTimer.ID) {
-        recentTimers.removeAll(where: { $0.id == counterID })
+        do {
+            try gameTimeClient.delete(counterID)
+            recentTimers.removeAll(where: { $0.id == counterID })
+        } catch {
+            // Catch Errors
+        }
     }
     
     func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
@@ -135,7 +145,17 @@ final class GameTimerVM {
     }
 
     func deleteRecentTimers(at offsets: IndexSet) {
-        recentTimers.remove(atOffsets: offsets)
+        let timersToDelete = offsets.map { recentTimers[$0] }
+        let idsToDelete = timersToDelete.map(\.id)
+        
+        do {
+            try gameTimeClient.deleteMany(idsToDelete)
+            recentTimers.removeAll {
+                idsToDelete.contains($0.id)
+            }
+        } catch {
+            // Catch Errors
+        }
     }
     
 // MARK: - Private Access Functions
