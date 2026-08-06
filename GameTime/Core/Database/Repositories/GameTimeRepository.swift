@@ -4,17 +4,20 @@ import SQLiteData
 struct GameTimeRepository {
     @Dependency(\.defaultDatabase) private var database
     
-    func fetchAll() throws -> [GameTimerRecord] {
-        try database.read { db in
+    func fetchAll() throws -> [GameTimer] {
+        let records = try database.read { db in
             try GameTimerRecord.all.fetchAll(db)
+        }
+        return records.map { record in
+                .init(record)
         }
     }
     
     func create(
         name: String,
         timer: Int
-    ) throws -> GameTimerRecord {
-        try database.write { db in
+    ) throws -> GameTimer {
+        let record = try database.write { db in
             try GameTimerRecord
                 .insert {
                     GameTimerRecord.Draft(
@@ -25,13 +28,14 @@ struct GameTimeRepository {
                 .returning { $0 }
                 .fetchOne(db)!
         }
+        return GameTimer(record)
     }
     
     func updateName(
         id: UUID,
         name: String
     ) throws {
-        try database.write { db in
+       try database.write { db in
             try GameTimerRecord
                 .where { $0.id.eq(id) }
                 .update {
