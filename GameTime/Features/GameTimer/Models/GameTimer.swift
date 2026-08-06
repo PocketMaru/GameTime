@@ -5,3 +5,11 @@ struct GameTimer: Identifiable, Hashable {
     var name: String
     var timer: Int
 }
+
+extension GameTimer {
+    init(_ record: GameTimerRecord) {
+        self.id = record.id
+        self.name = record.name
+        self.timer = record.timer
+    }
+}

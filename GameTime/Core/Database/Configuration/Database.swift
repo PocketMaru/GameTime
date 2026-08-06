@@ -31,7 +31,7 @@ func appDatabase() throws -> any DatabaseWriter {
     migrator.registerMigration("Create game timers") { db in
         try #sql(
             """
-            CREATE TABLE "gameTimers" (
+            CREATE TABLE "gameTimerRecords" (
                 "id" TEXT PRIMARY KEY NOT NULL ON CONFLICT REPLACE DEFAULT (uuid()),
                 "name" TEXT NOT NULL,
                 "timer" INTEGER NOT NULL
