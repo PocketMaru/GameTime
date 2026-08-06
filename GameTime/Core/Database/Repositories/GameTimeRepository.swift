@@ -53,4 +53,15 @@ struct GameTimeRepository {
                 .execute(db)
         }
     }
+    
+    func deleteMany(ids: [GameTimer.ID]) throws {
+        try database.write { db in
+            for id in ids {
+                try GameTimerRecord
+                    .where { $0.id.eq(id) }
+                    .delete()
+                    .execute(db)
+            }
+        }
+    }
 }
