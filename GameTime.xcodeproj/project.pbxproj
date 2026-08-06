@@ -6,6 +6,11 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		53A13317302405DD0030E189 /* SQLiteData in Frameworks */ = {isa = PBXBuildFile; productRef = 53A13316302405DD0030E189 /* SQLiteData */; };
+		53A13319302405ED0030E189 /* SQLiteDataTestSupport in Frameworks */ = {isa = PBXBuildFile; productRef = 53A13318302405ED0030E189 /* SQLiteDataTestSupport */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5333935E2FF5E40B009AD7A5 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -55,7 +60,7 @@
 			children = (
 				533393522FF5E409009AD7A5 /* GameTime */,
 				533393602FF5E40B009AD7A5 /* GameTimeTests */,
-				5333936A2FF5E40B009AD7A5 /* GameTimeUITests */,
+				53A13315302405DD0030E189 /* Frameworks */,
 				533393512FF5E409009AD7A5 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -65,9 +70,15 @@
 			children = (
 				533393502FF5E409009AD7A5 /* GameTime.app */,
 				5333935D2FF5E40B009AD7A5 /* GameTimeTests.xctest */,
-				533393672FF5E40B009AD7A5 /* GameTimeUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		53A13315302405DD0030E189 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -87,6 +98,9 @@
 				533393522FF5E409009AD7A5 /* GameTime */,
 			);
 			name = GameTime;
+			packageProductDependencies = (
+				53A13316302405DD0030E189 /* SQLiteData */,
+			);
 			productName = GameTime;
 			productReference = 533393502FF5E409009AD7A5 /* GameTime.app */;
 			productType = "com.apple.product-type.application";
@@ -458,8 +472,23 @@
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.8.2;
 			};
+			traits = (
+			);
 		};
 /* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		53A13316302405DD0030E189 /* SQLiteData */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5390D4F7301D0C4A002525AF /* XCRemoteSwiftPackageReference "sqlite-data" */;
+			productName = SQLiteData;
+		};
+		53A13318302405ED0030E189 /* SQLiteDataTestSupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5390D4F7301D0C4A002525AF /* XCRemoteSwiftPackageReference "sqlite-data" */;
+			productName = SQLiteDataTestSupport;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 533393482FF5E409009AD7A5 /* Project object */;
 	validationLevel = 1;
