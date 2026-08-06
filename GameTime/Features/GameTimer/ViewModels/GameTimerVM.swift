@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import SQLiteData
 
 enum GameTimerError: Error {
     case gameTimerNotFound
@@ -24,6 +25,9 @@ final class GameTimerVM {
     var recentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
     var path: [CurrentTimer] = []
+    
+    @ObservationIgnored
+    @Dependency(\.gameTimerClient) private var gameTimerClient
     
     func startNewTimerButtonPressed(
         name: String,
