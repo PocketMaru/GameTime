@@ -14,19 +14,11 @@
 			remoteGlobalIDString = 5333934F2FF5E409009AD7A5;
 			remoteInfo = GameTime;
 		};
-		533393682FF5E40B009AD7A5 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 533393482FF5E409009AD7A5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5333934F2FF5E409009AD7A5;
-			remoteInfo = GameTime;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		533393502FF5E409009AD7A5 /* GameTime.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GameTime.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5333935D2FF5E40B009AD7A5 /* GameTimeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameTimeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		533393672FF5E40B009AD7A5 /* GameTimeUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GameTimeUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -40,27 +32,19 @@
 			path = GameTimeTests;
 			sourceTree = "<group>";
 		};
-		5333936A2FF5E40B009AD7A5 /* GameTimeUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GameTimeUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5333934D2FF5E409009AD7A5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				53A13317302405DD0030E189 /* SQLiteData in Frameworks */,
 			);
 		};
 		5333935A2FF5E40B009AD7A5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-			);
-		};
-		533393642FF5E40B009AD7A5 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			files = (
+				53A13319302405ED0030E189 /* SQLiteDataTestSupport in Frameworks */,
 			);
 		};
 /* End PBXFrameworksBuildPhase section */
@@ -124,30 +108,12 @@
 				533393602FF5E40B009AD7A5 /* GameTimeTests */,
 			);
 			name = GameTimeTests;
+			packageProductDependencies = (
+				53A13318302405ED0030E189 /* SQLiteDataTestSupport */,
+			);
 			productName = GameTimeTests;
 			productReference = 5333935D2FF5E40B009AD7A5 /* GameTimeTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		533393662FF5E40B009AD7A5 /* GameTimeUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 533393752FF5E40B009AD7A5 /* Build configuration list for PBXNativeTarget "GameTimeUITests" */;
-			buildPhases = (
-				533393632FF5E40B009AD7A5 /* Sources */,
-				533393642FF5E40B009AD7A5 /* Frameworks */,
-				533393652FF5E40B009AD7A5 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				533393692FF5E40B009AD7A5 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				5333936A2FF5E40B009AD7A5 /* GameTimeUITests */,
-			);
-			name = GameTimeUITests;
-			productName = GameTimeUITests;
-			productReference = 533393672FF5E40B009AD7A5 /* GameTimeUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
 
@@ -163,10 +129,6 @@
 						CreatedOnToolsVersion = 27.0;
 					};
 					5333935C2FF5E40B009AD7A5 = {
-						CreatedOnToolsVersion = 27.0;
-						TestTargetID = 5333934F2FF5E409009AD7A5;
-					};
-					533393662FF5E40B009AD7A5 = {
 						CreatedOnToolsVersion = 27.0;
 						TestTargetID = 5333934F2FF5E409009AD7A5;
 					};
@@ -191,7 +153,6 @@
 			targets = (
 				5333934F2FF5E409009AD7A5 /* GameTime */,
 				5333935C2FF5E40B009AD7A5 /* GameTimeTests */,
-				533393662FF5E40B009AD7A5 /* GameTimeUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -203,11 +164,6 @@
 			);
 		};
 		5333935B2FF5E40B009AD7A5 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			files = (
-			);
-		};
-		533393652FF5E40B009AD7A5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			files = (
 			);
@@ -225,11 +181,6 @@
 			files = (
 			);
 		};
-		533393632FF5E40B009AD7A5 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			files = (
-			);
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -237,11 +188,6 @@
 			isa = PBXTargetDependency;
 			target = 5333934F2FF5E409009AD7A5 /* GameTime */;
 			targetProxy = 5333935E2FF5E40B009AD7A5 /* PBXContainerItemProxy */;
-		};
-		533393692FF5E40B009AD7A5 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5333934F2FF5E409009AD7A5 /* GameTime */;
-			targetProxy = 533393682FF5E40B009AD7A5 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -475,46 +421,6 @@
 			};
 			name = Release;
 		};
-		533393762FF5E40B009AD7A5 /* Debug configuration for PBXNativeTarget "GameTimeUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B9QLNQS5QW;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = PocketMaru.GameTimeUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = GameTime;
-			};
-			name = Debug;
-		};
-		533393772FF5E40B009AD7A5 /* Release configuration for PBXNativeTarget "GameTimeUITests" */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = B9QLNQS5QW;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = PocketMaru.GameTimeUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_APPROACHABLE_CONCURRENCY = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = GameTime;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -539,14 +445,6 @@
 			buildConfigurations = (
 				533393732FF5E40B009AD7A5 /* Debug configuration for PBXNativeTarget "GameTimeTests" */,
 				533393742FF5E40B009AD7A5 /* Release configuration for PBXNativeTarget "GameTimeTests" */,
-			);
-			defaultConfigurationName = Release;
-		};
-		533393752FF5E40B009AD7A5 /* Build configuration list for PBXNativeTarget "GameTimeUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				533393762FF5E40B009AD7A5 /* Debug configuration for PBXNativeTarget "GameTimeUITests" */,
-				533393772FF5E40B009AD7A5 /* Release configuration for PBXNativeTarget "GameTimeUITests" */,
 			);
 			defaultConfigurationName = Release;
 		};
