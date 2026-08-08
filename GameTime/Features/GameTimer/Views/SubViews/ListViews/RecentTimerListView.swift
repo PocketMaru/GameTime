@@ -5,22 +5,24 @@ struct RecentTimerListView: View {
     let delete: (GameTimer.ID) -> Void
     let timerAction: (GameTimer) -> Void
     var body: some View {
-        List(recentTimers) { timer in
+        List { 
             Section {
-                RecentTimerRowView(
-                    recentTimer: timer,
-                    timerAction: {
-                        timerAction(timer)
+                ForEach(recentTimers) { timer in
+                    RecentTimerRowView(
+                        recentTimer: timer,
+                        timerAction: {
+                            timerAction(timer)
+                        }
+                    )
+                    .swipeActions {
+                        Button(role: .destructive) {
+                            delete(timer.id)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
                     }
-                )
-                .swipeActions {
-                    Button(role: .destructive) {
-                        delete(timer.id)
-                    } label: {
-                        Label("Delete", systemImage: "trash")
-                    }
+                    .listRowBackground(Color.background)
                 }
-                .listRowBackground(Color.background)
             } header: {
                 Text("Resents")
                     .foregroundStyle(Color.primaryText)
