@@ -22,21 +22,23 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var currentTimers: [CurrentTimer] = []
-    var recentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
     var path: [CurrentTimer] = []
     
     @ObservationIgnored
-    @Dependency(\.gameTimeClient) private var gameTimeClient
-    
-    func onAppear() {
-        do {
-            let records = try fetchAll()
-            recentTimers = records
-        } catch {
-            // Catch Errors
+    @FetchAll(
+        GameTimerRecord.all.select {
+            GameTimer.Columns(
+                id: $0.id,
+                name: $0.name,
+                timer: $0.timer
+            )
         }
-    }
+    )
+    var recentTimers
+    
+    @ObservationIgnored
+    @Dependency(\.gameTimeClient) private var gameTimeClient
     
     func startNewTimerButtonPressed(
         name: String,
@@ -153,37 +155,34 @@ final class GameTimerVM {
         name: String,
         timeComponents: TimeComponents
     ) throws {
-        guard validate(
-            timeComponents: timeComponents
-        ) else { return }
+        guard validate(timeComponents: timeComponents) else { return }
         
-        let finalName = name.isEmpty ? TimeConverter.toLabel(timeComponents) : name
+        let finalName = name.isEmpty
+        ? TimeConverter.toLabel(timeComponents)
+        : name
+        
         let seconds = TimeConverter.convertToSeconds(time: timeComponents)
         
+        let model: GameTimer
         
-        let model = try gameTimeClient.create(finalName, seconds)
+        if let existingTimer = recentTimers.first(where: {
+            $0.timer == seconds &&
+            $0.name == finalName
+        }) {
+            model = existingTimer
+        } else {
+            model = try gameTimeClient.create(finalName, seconds)
+        }
+        
         let currentTimer = CurrentTimer(
             model: model,
             timer: TimerVM(seconds: model.timer)
         )
-        let exists = recentTimers.contains {
-            $0.timer == model.timer &&
-            $0.name == model.name
-        }
         
         currentTimers.append(currentTimer)
         
-        if !exists {
-            recentTimers.append(model)
-        }
-        
         currentTimer.timer.toggleTimerControl()
         onCompleteAction(currentTimer)
-        
-    }
-    
-    private func fetchAll() throws -> [GameTimer] {
-        try gameTimeClient.fetchAll()
     }
     
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
