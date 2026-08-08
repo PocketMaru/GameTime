@@ -48,7 +48,7 @@ final class GameTimerVM {
                 timeComponents: timeComponents
             )
         } catch {
-            print("New timer creation failed", error)
+            // Catch Error
         }
         
         if sheet != nil {
@@ -58,13 +58,14 @@ final class GameTimerVM {
     
     func startPresetTimerButtonPressed(_ timer: TimeComponents) {
         do {
-            try  createTimer(
+            try createTimer(
                 name: "",
                 timeComponents: timer
             )
         } catch {
-            // Catch Errors
+            // Catch Error
         }
+        
         if sheet != nil {
             dismissSheet()
         }
@@ -93,17 +94,13 @@ final class GameTimerVM {
     }
     
     func saveNameButtonPressed(timer: CurrentTimer, name: String) {
-        guard
-            let recentTimerIndex = recentTimers.firstIndex(of: timer.model),
-            let currentTimerIndex = currentTimers.firstIndex(of: timer)
-        else { return  }
-        do {
-            try gameTimeClient.updateName(timer.model.id, name)
-            recentTimers[recentTimerIndex].name = name
-            currentTimers[currentTimerIndex].model.name = name
-        } catch {
-            // Catch Errors
+        guard let currentTimerIndex = currentTimers.firstIndex(of: timer) else {
+            return
         }
+
+        gameTimeClient.updateName(timer.model.id, name)
+
+        currentTimers[currentTimerIndex].model.name = name
     }
     
     func createButtonPressed() {
@@ -128,12 +125,7 @@ final class GameTimerVM {
     }
     
     func deleteRecentTimerButtonPressed(counterID: GameTimer.ID) {
-        do {
-            try gameTimeClient.delete(counterID)
-            recentTimers.removeAll(where: { $0.id == counterID })
-        } catch {
-            // Catch Errors
-        }
+        gameTimeClient.delete(counterID)
     }
     
     func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
@@ -143,22 +135,14 @@ final class GameTimerVM {
     func deleteCurrentTimers(at offsets: IndexSet) {
         currentTimers.remove(atOffsets: offsets)
     }
-
+    
     func deleteRecentTimers(at offsets: IndexSet) {
         let timersToDelete = offsets.map { recentTimers[$0] }
         let idsToDelete = timersToDelete.map(\.id)
-        
-        do {
-            try gameTimeClient.deleteMany(idsToDelete)
-            recentTimers.removeAll {
-                idsToDelete.contains($0.id)
-            }
-        } catch {
-            // Catch Errors
-        }
+        gameTimeClient.deleteMany(idsToDelete)
     }
     
-// MARK: - Private Access Functions
+    // MARK: - Private Access Functions
     
     // - Creates a new `CurrentTimer` object.
     // - Creates a name based on the selected timer if the label is empty.
