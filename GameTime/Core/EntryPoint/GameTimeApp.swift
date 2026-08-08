@@ -3,7 +3,6 @@ import SQLiteData
 
 @main
 struct GameTimeApp: App {
-    @State private var vm = GameTimerVM()
     
     init() {
         prepareDependencies {
@@ -13,7 +12,7 @@ struct GameTimeApp: App {
     
     var body: some Scene {
         WindowGroup {
-            GameTimeView(vm: vm)
+            GameTimeView()
         }
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct GameTimeView: View {
-    @Bindable var vm: GameTimerVM
+    @State private var vm = GameTimerVM()
     @State private var name: String = ""
     @State private var timeComponents = TimeComponents(
         seconds: 0,
