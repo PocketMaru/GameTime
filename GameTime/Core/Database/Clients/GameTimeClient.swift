@@ -2,11 +2,10 @@ import Foundation
 import SQLiteData
 
 struct GameTimeClient {
-    var fetchAll: @Sendable () throws -> [GameTimer]
     var create: @Sendable (_ name: String, _ timer: Int) throws -> GameTimer
-    var updateName: @Sendable (_ id: GameTimer.ID, _ name: String) throws -> Void
-    var delete: @Sendable (_ id: GameTimer.ID) throws -> Void
-    var deleteMany: @Sendable (_ ids: [GameTimer.ID]) throws -> Void
+    var updateName: @Sendable (_ id: GameTimer.ID, _ name: String) -> Void
+    var delete: @Sendable (_ id: GameTimer.ID) -> Void
+    var deleteMany: @Sendable (_ ids: [GameTimer.ID]) -> Void
 }
 
 extension GameTimeClient: DependencyKey {
@@ -14,9 +13,6 @@ extension GameTimeClient: DependencyKey {
         let repository = GameTimeRepository()
         
         return GameTimeClient(
-            fetchAll: {
-                try repository.fetchAll()
-            },
             create: { name, timer in
                 try repository.create(
                     name: name,
@@ -24,16 +20,16 @@ extension GameTimeClient: DependencyKey {
                 )
             },
             updateName: { id, name in
-                try repository.updateName(
+                repository.updateName(
                     id: id,
                     name: name
                 )
             },
             delete: { id in
-                try repository.delete(id: id)
+                repository.delete(id: id)
             },
             deleteMany: { ids in
-                try repository.deleteMany(ids: ids)
+                repository.deleteMany(ids: ids)
             }
         )
     }()
