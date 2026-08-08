@@ -1,5 +1,7 @@
 import Foundation
+import SQLiteData
 
+@Selection
 struct GameTimer: Identifiable, Hashable {
     let id: UUID
     var name: String
