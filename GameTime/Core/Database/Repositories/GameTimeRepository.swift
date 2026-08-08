@@ -32,35 +32,41 @@ struct GameTimeRepository {
     }
     
     func updateName(
-        id: UUID,
+        id: GameTimer.ID,
         name: String
-    ) throws {
-       try database.write { db in
-            try GameTimerRecord
-                .where { $0.id.eq(id) }
-                .update {
-                    $0.name = name
-                }
-                .execute(db)
+    ) {
+        withErrorReporting {
+            try database.write { db in
+                try GameTimerRecord
+                    .where { $0.id.eq(id) }
+                    .update {
+                        $0.name = name
+                    }
+                    .execute(db)
+            }
         }
     }
     
-    func delete(id: UUID) throws {
-        try database.write { db in
-            try GameTimerRecord
-                .where { $0.id.eq(id) }
-                .delete()
-                .execute(db)
-        }
-    }
-    
-    func deleteMany(ids: [GameTimer.ID]) throws {
-        try database.write { db in
-            for id in ids {
+    func delete(id: GameTimer.ID) {
+        withErrorReporting {
+            try database.write { db in
                 try GameTimerRecord
                     .where { $0.id.eq(id) }
                     .delete()
                     .execute(db)
+            }
+        }
+    }
+    
+    func deleteMany(ids: [GameTimer.ID]) {
+        withErrorReporting {
+            try database.write { db in
+                for id in ids {
+                    try GameTimerRecord
+                        .where { $0.id.eq(id) }
+                        .delete()
+                        .execute(db)
+                }
             }
         }
     }
