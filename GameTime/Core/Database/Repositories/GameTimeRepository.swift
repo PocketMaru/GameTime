@@ -1,6 +1,7 @@
 import Foundation
 import SQLiteData
 
+struct MissingRecordError: Error {}
 struct GameTimeRepository {
     @Dependency(\.defaultDatabase) private var database
     
@@ -9,7 +10,6 @@ struct GameTimeRepository {
         timer: Int
     ) throws -> GameTimer {
         let record = try database.write { db in
-            
             try GameTimerRecord
                 .insert {
                     GameTimerRecord.Draft(
@@ -18,7 +18,10 @@ struct GameTimeRepository {
                     )
                 }
                 .returning { $0 }
-                .fetchOne(db)!
+                .fetchOne(db)
+        }
+        guard let record else {
+            throw MissingRecordError()
         }
         return GameTimer(record)
     }
