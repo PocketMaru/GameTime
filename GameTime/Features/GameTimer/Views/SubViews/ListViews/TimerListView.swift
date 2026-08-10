@@ -34,6 +34,7 @@ struct TimerListView: View {
                                     currentTimerAction(timer)
                                 }
                             )
+                            
                             .swipeActions {
                                 Button(role: .destructive) {
                                     deleteCurrent(timer.id)
@@ -42,9 +43,9 @@ struct TimerListView: View {
                                 }
                             }
                         }
+                        .tag(TimerSelection.current(timer.id))
                         .listRowBackground(Color.background)
                     }
-                    .onDelete(perform: deleteCurrentTimers)
                 } header: {
                     Text("Timers")
                         .foregroundStyle(Color.primaryText)
@@ -62,6 +63,7 @@ struct TimerListView: View {
                                 recentTimerAction(timer)
                             }
                         )
+                        .tag(TimerSelection.recent(timer.id))
                         .swipeActions {
                             Button(role: .destructive) {
                                 deleteRecent(timer.id)
@@ -71,7 +73,6 @@ struct TimerListView: View {
                         }
                         .listRowBackground(Color.background)
                     }
-                    .onDelete(perform: deleteRecentTimers)
                 } header: {
                     Text("Resents")
                         .foregroundStyle(Color.primaryText)
