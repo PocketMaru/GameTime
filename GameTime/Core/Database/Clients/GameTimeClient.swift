@@ -5,7 +5,7 @@ struct GameTimeClient {
     var create: @Sendable (_ name: String, _ timer: Int) throws -> GameTimer
     var updateName: @Sendable (_ id: GameTimer.ID, _ name: String) -> Void
     var delete: @Sendable (_ id: GameTimer.ID) -> Void
-    var deleteMany: @Sendable (_ ids: [GameTimer.ID]) -> Void
+    var deleteMany: @Sendable (_ ids: Set<GameTimer.ID>) -> Void
 }
 
 extension GameTimeClient: DependencyKey {

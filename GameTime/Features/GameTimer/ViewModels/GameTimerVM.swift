@@ -139,16 +139,16 @@ final class GameTimerVM {
     }
     
     func deleteSelectedTimers(_ selections: Set<TimerSelection>) {
-        var recentIDs: [GameTimer.ID] = []
-        var currentIDs: [CurrentTimer.ID] = []
+        var recentIDs: Set<GameTimer.ID> = []
+        var currentIDs: Set<CurrentTimer.ID> = []
 
         for selection in selections {
             switch selection {
             case let .current(id):
-                currentIDs.append(id)
+                currentIDs.insert(id)
 
             case let .recent(id):
-                recentIDs.append(id)
+                recentIDs.insert(id)
             }
         }
 

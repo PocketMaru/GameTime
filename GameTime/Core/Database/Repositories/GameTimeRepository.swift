@@ -50,15 +50,13 @@ struct GameTimeRepository {
         }
     }
     
-    func deleteMany(ids: [GameTimer.ID]) {
+    func deleteMany(ids: Set<GameTimer.ID>) {
         withErrorReporting {
             try database.write { db in
-                for id in ids {
-                    try GameTimerRecord
-                        .where { $0.id.eq(id) }
-                        .delete()
-                        .execute(db)
-                }
+                try GameTimerRecord
+                    .where { $0.id.in(ids) }
+                    .delete()
+                    .execute(db)
             }
         }
     }
