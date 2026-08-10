@@ -138,10 +138,25 @@ final class GameTimerVM {
         currentTimers.remove(atOffsets: offsets)
     }
     
-    func deleteRecentTimers(at offsets: IndexSet) {
-        let timersToDelete = offsets.map { recentTimers[$0] }
-        let idsToDelete = timersToDelete.map(\.id)
-        gameTimeClient.deleteMany(idsToDelete)
+    func deleteSelectedTimers(_ selections: Set<TimerSelection>) {
+        var recentIDs: [GameTimer.ID] = []
+        var currentIDs: [CurrentTimer.ID] = []
+
+        for selection in selections {
+            switch selection {
+            case let .current(id):
+                currentIDs.append(id)
+
+            case let .recent(id):
+                recentIDs.append(id)
+            }
+        }
+
+        currentTimers.removeAll {
+            currentIDs.contains($0.id)
+        }
+
+        gameTimeClient.deleteMany(recentIDs)
     }
     
     // MARK: - Private Access Functions
