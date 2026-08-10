@@ -1,22 +1,27 @@
 import SwiftUI
 
+enum TimerSelection: Hashable {
+    case current(CurrentTimer.ID)
+    case recent(GameTimer.ID)
+}
+
 struct TimerListView: View {
+    @Binding var selectedTimers: Set<TimerSelection>
+    
     let currentTimers: [CurrentTimer]
     let recentTimers: [GameTimer]
     
     let deleteCurrent: (CurrentTimer.ID) -> Void
     let deleteRecent: (GameTimer.ID) -> Void
     
-    let deleteCurrentTimers: (IndexSet) -> Void
-    let deleteRecentTimers: (IndexSet) -> Void
-    
     let currentTimerAction: (CurrentTimer) -> Void
     let recentTimerAction: (GameTimer) -> Void
     
     let showDetails: (CurrentTimer.ID) -> Void
     
+    
     var body: some View {
-        List {
+        List(selection: $selectedTimers) {
             if !currentTimers.isEmpty {
                 Section {
                     ForEach(currentTimers) { timer in
