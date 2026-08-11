@@ -8,6 +8,9 @@ struct GameTimeView: View {
         minutes: 0,
         hours: 1
     )
+    @State private var selectedTimers: Set<TimerSelection> = []
+    @State private var editMode: EditMode = .inactive
+    
     var body: some View {
         NavigationStack(path: $vm.path) {
             VStack(spacing: 20) {
@@ -32,12 +35,11 @@ struct GameTimeView: View {
                     )
                 }
                 TimerListView(
+                    selectedTimers: $selectedTimers,
                     currentTimers: vm.currentTimers,
                     recentTimers: vm.recentTimers,
                     deleteCurrent: vm.deleteCurrentTimerButtonPressed,
                     deleteRecent: vm.deleteRecentTimerButtonPressed,
-                    deleteCurrentTimers: vm.deleteCurrentTimers,
-                    deleteRecentTimers: vm.deleteRecentTimers,
                     currentTimerAction: vm.currentTimerRowButtonPressed,
                     recentTimerAction: vm.recentTimerButtonPressed,
                     showDetails: vm.detailButtonPressed
@@ -69,6 +71,19 @@ struct GameTimeView: View {
                         }
                     }
                 }
+            }
+            .environment(\.editMode, $editMode)
+            .onChange(of: editMode) { oldValue, newValue in
+                guard oldValue == .active, newValue == .inactive else {
+                    return
+                }
+                guard !selectedTimers.isEmpty else {
+                    print("Nothing selected")
+                    return
+                }
+
+                vm.deleteSelectedTimers(selectedTimers)
+                selectedTimers.removeAll()
             }
             .navigationDestination(for: CurrentTimer.self) { timer in
                 GameTimerDetailView(

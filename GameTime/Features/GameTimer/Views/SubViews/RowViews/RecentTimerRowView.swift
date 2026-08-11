@@ -21,6 +21,7 @@ struct RecentTimerRowView: View {
                             .opacity(0.7)
                     }
             }
+            .buttonStyle(.plain)
         }
         .padding(.horizontal, 10)
     }

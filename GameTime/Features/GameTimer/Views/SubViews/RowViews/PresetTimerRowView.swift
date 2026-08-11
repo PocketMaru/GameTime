@@ -17,8 +17,8 @@ struct PresetTimerRowView: View {
     ]
     let action: (TimeComponents) -> Void
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            Section {
+        Section {
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 10) {
                     ForEach(presets, id: \.compare) { timer in
                         PresetButtonView(
@@ -27,14 +27,15 @@ struct PresetTimerRowView: View {
                         )
                     }
                 }
-            } header: {
-                Text("Presets")
-                    .foregroundStyle(Color.primaryText)
-                    .font(.headline)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal)
             }
+        } header: {
+            Text("Presets")
+                .foregroundStyle(Color.primaryText)
+                .font(.headline)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal)
         }
+        
     }
 }
 

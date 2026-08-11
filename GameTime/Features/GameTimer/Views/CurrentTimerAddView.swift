@@ -9,29 +9,28 @@ struct CurrentTimerAddView: View {
     )
     let vm: GameTimerVM
     var body: some View {
-        ZStack {
-            Color("Background")
-                .ignoresSafeArea()
-            VStack(spacing: 10) {
-                TimerPickerView(
-                    selectedSeconds: $timeComponents.seconds,
-                    selectedMinutes: $timeComponents.minutes,
-                    selectedHours: $timeComponents.hours,
-                )
-                
-                TimerNameView(
-                    name: $name
-                )
-                
-                PresetTimerRowView(action: vm.startPresetTimerButtonPressed)
-                
-                RecentTimerListView(
-                    recentTimers: vm.recentTimers,
-                    delete: vm.deleteRecentTimerButtonPressed,
-                    timerAction: vm.recentTimerButtonPressed,
-                )
-            }
+        VStack(spacing: 10) {
+            TimerPickerView(
+                selectedSeconds: $timeComponents.seconds,
+                selectedMinutes: $timeComponents.minutes,
+                selectedHours: $timeComponents.hours,
+            )
+            
+            TimerNameView(
+                name: $name
+            )
+            
+            PresetTimerRowView(action: vm.startPresetTimerButtonPressed)
+            
+            RecentTimerListView(
+                recentTimers: vm.recentTimers,
+                delete: vm.deleteRecentTimerButtonPressed,
+                timerAction: vm.recentTimerButtonPressed,
+            )
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(.background))
+        
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button(role: .close) {

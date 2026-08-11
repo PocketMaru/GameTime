@@ -1,6 +1,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import SQLiteData
 
 enum GameTimerError: Error {
     case gameTimerNotFound
@@ -21,29 +22,52 @@ enum GameTimerSheet: Hashable, Identifiable {
 @Observable
 final class GameTimerVM {
     var currentTimers: [CurrentTimer] = []
-    var recentTimers: [GameTimer] = []
     var sheet: GameTimerSheet?
     var path: [CurrentTimer] = []
+    
+    @ObservationIgnored
+    @FetchAll(
+        GameTimerRecord.all.select {
+            GameTimer.Columns(
+                id: $0.id,
+                name: $0.name,
+                timer: $0.timer
+            )
+        }
+    )
+    var recentTimers
+    
+    @ObservationIgnored
+    @Dependency(\.gameTimeClient) private var gameTimeClient
     
     func startNewTimerButtonPressed(
         name: String,
         timeComponents: TimeComponents
     ) {
-        createTimer(
-            name: name,
-            timeComponents: timeComponents
-        )
+        do {
+            try createTimer(
+                name: name,
+                timeComponents: timeComponents
+            )
+        } catch {
+            // Catch Error
+        }
+        
         if sheet != nil {
             dismissSheet()
         }
-        
     }
     
     func startPresetTimerButtonPressed(_ timer: TimeComponents) {
-        createTimer(
-            name: "",
-            timeComponents: timer
-        )
+        do {
+            try createTimer(
+                name: "",
+                timeComponents: timer
+            )
+        } catch {
+            // Catch Error
+        }
+        
         if sheet != nil {
             dismissSheet()
         }
@@ -72,11 +96,12 @@ final class GameTimerVM {
     }
     
     func saveNameButtonPressed(timer: CurrentTimer, name: String) {
-        guard
-            let recentTimerIndex = recentTimers.firstIndex(of: timer.model),
-            let currentTimerIndex = currentTimers.firstIndex(of: timer)
-        else { return  }
-        recentTimers[recentTimerIndex].name = name
+        guard let currentTimerIndex = currentTimers.firstIndex(of: timer) else {
+            return
+        }
+
+        gameTimeClient.updateName(timer.model.id, name)
+
         currentTimers[currentTimerIndex].model.name = name
     }
     
@@ -102,7 +127,7 @@ final class GameTimerVM {
     }
     
     func deleteRecentTimerButtonPressed(counterID: GameTimer.ID) {
-        recentTimers.removeAll(where: { $0.id == counterID })
+        gameTimeClient.delete(counterID)
     }
     
     func deleteCurrentTimerButtonPressed(counterID: CurrentTimer.ID) {
@@ -112,12 +137,29 @@ final class GameTimerVM {
     func deleteCurrentTimers(at offsets: IndexSet) {
         currentTimers.remove(atOffsets: offsets)
     }
+    
+    func deleteSelectedTimers(_ selections: Set<TimerSelection>) {
+        var recentIDs: Set<GameTimer.ID> = []
+        var currentIDs: Set<CurrentTimer.ID> = []
 
-    func deleteRecentTimers(at offsets: IndexSet) {
-        recentTimers.remove(atOffsets: offsets)
+        for selection in selections {
+            switch selection {
+            case let .current(id):
+                currentIDs.insert(id)
+
+            case let .recent(id):
+                recentIDs.insert(id)
+            }
+        }
+
+        currentTimers.removeAll {
+            currentIDs.contains($0.id)
+        }
+
+        gameTimeClient.deleteMany(recentIDs)
     }
     
-// MARK: - Private Access Functions
+    // MARK: - Private Access Functions
     
     // - Creates a new `CurrentTimer` object.
     // - Creates a name based on the selected timer if the label is empty.
@@ -127,43 +169,42 @@ final class GameTimerVM {
     private func createTimer(
         name: String,
         timeComponents: TimeComponents
-    ) {
-        guard validate(
-            timeComponents: timeComponents
-        ) else { return }
+    ) throws {
+        guard validate(timeComponents: timeComponents) else { return }
         
-        let finalName = name.isEmpty ? TimeConverter.toLabel(timeComponents) : name
+        let finalName = name.isEmpty
+        ? TimeConverter.toLabel(timeComponents)
+        : name
         
-        let model = GameTimer(
-            id: UUID(),
-            name: finalName,
-            timer: TimeConverter.convertToSeconds(time: timeComponents)
-        )
+        let seconds = TimeConverter.convertToSeconds(time: timeComponents)
+        
+        let model: GameTimer
+        
+        if let existingTimer = recentTimers.first(where: {
+            $0.timer == seconds &&
+            $0.name == finalName
+        }) {
+            model = existingTimer
+        } else {
+            model = try gameTimeClient.create(finalName, seconds)
+        }
         
         let currentTimer = CurrentTimer(
             model: model,
             timer: TimerVM(seconds: model.timer)
         )
         
-        let exists = recentTimers.contains {
-            $0.timer == model.timer &&
-            $0.name == model.name
-        }
-        
         currentTimers.append(currentTimer)
-        
-        if !exists {
-            recentTimers.append(model)
-        }
         
         currentTimer.timer.toggleTimerControl()
         onCompleteAction(currentTimer)
     }
     
     private func onCompleteAction(_ currentTimer: CurrentTimer) {
+        let timerID = currentTimer.id
         currentTimer.timer.setupOnCompleteAction = { [weak self] in
             guard let self else { return }
-            currentTimers.removeAll(where: { $0.id == currentTimer.id })
+            currentTimers.removeAll(where: { $0.id == timerID })
         }
     }
     

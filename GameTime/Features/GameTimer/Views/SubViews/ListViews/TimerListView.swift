@@ -1,22 +1,27 @@
 import SwiftUI
 
+enum TimerSelection: Hashable {
+    case current(CurrentTimer.ID)
+    case recent(GameTimer.ID)
+}
+
 struct TimerListView: View {
+    @Binding var selectedTimers: Set<TimerSelection>
+    
     let currentTimers: [CurrentTimer]
     let recentTimers: [GameTimer]
     
     let deleteCurrent: (CurrentTimer.ID) -> Void
     let deleteRecent: (GameTimer.ID) -> Void
     
-    let deleteCurrentTimers: (IndexSet) -> Void
-    let deleteRecentTimers: (IndexSet) -> Void
-    
     let currentTimerAction: (CurrentTimer) -> Void
     let recentTimerAction: (GameTimer) -> Void
     
     let showDetails: (CurrentTimer.ID) -> Void
     
+    
     var body: some View {
-        List {
+        List(selection: $selectedTimers) {
             if !currentTimers.isEmpty {
                 Section {
                     ForEach(currentTimers) { timer in
@@ -29,6 +34,7 @@ struct TimerListView: View {
                                     currentTimerAction(timer)
                                 }
                             )
+                            
                             .swipeActions {
                                 Button(role: .destructive) {
                                     deleteCurrent(timer.id)
@@ -37,9 +43,9 @@ struct TimerListView: View {
                                 }
                             }
                         }
+                        .tag(TimerSelection.current(timer.id))
                         .listRowBackground(Color.background)
                     }
-                    .onDelete(perform: deleteCurrentTimers)
                 } header: {
                     Text("Timers")
                         .foregroundStyle(Color.primaryText)
@@ -57,6 +63,7 @@ struct TimerListView: View {
                                 recentTimerAction(timer)
                             }
                         )
+                        .tag(TimerSelection.recent(timer.id))
                         .swipeActions {
                             Button(role: .destructive) {
                                 deleteRecent(timer.id)
@@ -66,7 +73,6 @@ struct TimerListView: View {
                         }
                         .listRowBackground(Color.background)
                     }
-                    .onDelete(perform: deleteRecentTimers)
                 } header: {
                     Text("Resents")
                         .foregroundStyle(Color.primaryText)
